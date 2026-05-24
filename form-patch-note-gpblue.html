@@ -1964,4 +1964,34 @@ function toast(icon,msg,isErr=false){
   el.classList.add('show');clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>el.classList.remove('show'),3600);
 }
-function esc(s){return S
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ═══════════════════════════════════════════
+//  STARTUP
+// ═══════════════════════════════════════════
+window.addEventListener('load',()=>{
+  initStorage();
+  processInviteHash();
+  if(GOOGLE_CLIENT_ID==='YOUR_GOOGLE_CLIENT_ID_HERE'){showPage('setup');return;}
+  try{
+    const saved=ls(SK.USER);
+    if(saved&&saved!==''){
+      const u=JSON.parse(saved);
+      const rec=getUserRecord(u.email);
+      if(rec){
+        const SEVEN_DAYS=7*24*60*60*1000;
+        if(u.lastActive&&(Date.now()-new Date(u.lastActive).getTime())>SEVEN_DAYS){
+          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
+        }
+        if(rec.sessionRevoked){
+          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
+        }
+        currentUser=u;loadMain();showPage('main');return;
+      }
+    }
+  }catch(e){}
+  showPage('login');initGoogleBtn();
+});
+</script>
+</body>
+</html>
