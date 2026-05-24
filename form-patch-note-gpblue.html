@@ -521,6 +521,7 @@ const GOOGLE_CLIENT_ID   = localStorage.getItem('gp_oauth_client_id')||"YOUR_GOO
 const ADMIN_EMAIL        = "cherryyuppi28@gmail.com";
 const GDOCS_URL          = "https://docs.google.com/document/d/14SwkNGFBA-rCfCi7ALQju8QPosq5fQhJK4h_4AtCYp4/edit?usp=sharing";
 const APPS_SCRIPT_URL    = ""; // optional: deploy Apps Script & paste URL here
+const INVITE_SECRET      = "GPBLUE_TOSM_2026"; // used to sign invite links
 
 // ═══════════════════════════════════════════
 //  STORAGE KEYS
@@ -1657,6 +1658,33 @@ function revokeUserSession(email){
   renderPerms();
   toast('🔒','ล้าง Login ของ '+email+' แล้ว — ต้อง Login ใหม่เพื่อเข้าใช้');
 }
+function generateInviteLink(email,role){
+  const payload={email:email.toLowerCase(),role,secret:INVITE_SECRET,ts:Date.now(),exp:Date.now()+7*24*60*60*1000};
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const url=location.href.split('#')[0]+'#invite='+encoded;
+  navigator.clipboard.writeText(url).then(()=>{
+    toast('🔗','คัดลอก Invite Link สำหรับ '+email+' แล้ว — ส่งให้เขาเปิด Link นี้');
+  }).catch(()=>{
+    prompt('คัดลอก Invite Link นี้ส่งให้ User:',url);
+  });
+}
+function processInviteHash(){
+  const hash=location.hash;
+  if(!hash.startsWith('#invite='))return false;
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(hash.slice(8)))));
+    if(data.secret!==INVITE_SECRET){alert('Invite Link ไม่ถูกต้อง');history.replaceState(null,'',location.pathname+location.search);return false;}
+    if(data.exp&&Date.now()>data.exp){alert('Invite Link หมดอายุแล้ว (7 วัน) กรุณาขอ Link ใหม่จาก Admin');history.replaceState(null,'',location.pathname+location.search);return false;}
+    const arr=getUsers();
+    const existing=arr.findIndex(u=>u.email===data.email);
+    if(existing>=0){arr[existing]={...arr[existing],role:data.role,sessionRevoked:false};}
+    else{arr.push({email:data.email,role:data.role,name:'',addedAt:now(),sessionRevoked:false});}
+    ls(SK.USERS,JSON.stringify(arr));
+    history.replaceState(null,'',location.pathname+location.search);
+    toast('✅','เพิ่มสิทธิ์ '+data.email+' เป็น '+data.role+' สำเร็จ — กรุณา Login');
+    return true;
+  }catch(e){history.replaceState(null,'',location.pathname+location.search);return false;}
+}
 function renderPerms(){
   const arr=getUsers();
   document.getElementById('email-count').textContent=arr.length;
@@ -1681,6 +1709,7 @@ function renderPerms(){
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
         <span style="font-size:11px;color:var(--text3)">🕐 Last Login: ${lastLoginStr}</span>
         <div style="display:flex;gap:6px">
+          ${isOwner?'':`<button class="btn btn-sm" onclick="generateInviteLink('${u.email}','${u.role}')" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--blue2);font-size:11px" title="คัดลอก Invite Link ส่งให้ User เปิด">🔗 Invite</button>`}
           ${isOwner?'':`<button class="btn btn-sm" onclick="revokeUserSession('${u.email}')"
             style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--yellow);font-size:11px"
             title="บังคับให้ User Login ใหม่">🔒 ล้าง Login</button>`}
@@ -1935,48 +1964,4 @@ function toast(icon,msg,isErr=false){
   el.classList.add('show');clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>el.classList.remove('show'),3600);
 }
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-// ═══════════════════════════════════════════
-//  GOOGLE BUTTON INIT
-// ═══════════════════════════════════════════
-function initGoogleBtn(){
-  try{
-    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCred});
-    google.accounts.id.renderButton(document.getElementById('google-signin-btn'),{theme:'outline',size:'large',width:300,locale:'th'});
-  }catch(e){
-    document.getElementById('demo-login-btn').style.display='flex';
-    document.getElementById('demo-banner-login').style.display='flex';
-  }
-}
-
-// ═══════════════════════════════════════════
-//  STARTUP
-// ═══════════════════════════════════════════
-window.addEventListener('load',()=>{
-  initStorage();
-  if(GOOGLE_CLIENT_ID==='YOUR_GOOGLE_CLIENT_ID_HERE'){showPage('setup');return;}
-  try{
-    const saved=ls(SK.USER);
-    if(saved&&saved!==''){
-      const u=JSON.parse(saved);
-      const rec=getUserRecord(u.email);
-      if(rec){
-        // Check 7-day inactivity
-        const SEVEN_DAYS=7*24*60*60*1000;
-        if(u.lastActive&&(Date.now()-new Date(u.lastActive).getTime())>SEVEN_DAYS){
-          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
-        }
-        // Check admin-revoked session
-        if(rec.sessionRevoked){
-          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
-        }
-        currentUser=u;loadMain();showPage('main');return;
-      }
-    }
-  }catch(e){}
-  showPage('login');initGoogleBtn();
-});
-</script>
-</body>
-</html>
+function esc(s){return S
