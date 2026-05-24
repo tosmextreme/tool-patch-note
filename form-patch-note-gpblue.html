@@ -1659,7 +1659,8 @@ function revokeUserSession(email){
   toast('🔒','ล้าง Login ของ '+email+' แล้ว — ต้อง Login ใหม่เพื่อเข้าใช้');
 }
 function generateInviteLink(email,role){
-  const payload={email:email.toLowerCase(),role,secret:INVITE_SECRET,ts:Date.now(),exp:Date.now()+7*24*60*60*1000};
+  const clientId=localStorage.getItem('gp_oauth_client_id')||'';
+  const payload={email:email.toLowerCase(),role,secret:INVITE_SECRET,ts:Date.now(),exp:Date.now()+7*24*60*60*1000,cid:clientId};
   const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
   const url=location.href.split('#')[0]+'#invite='+encoded;
   navigator.clipboard.writeText(url).then(()=>{
@@ -1675,6 +1676,10 @@ function processInviteHash(){
     const data=JSON.parse(decodeURIComponent(escape(atob(hash.slice(8)))));
     if(data.secret!==INVITE_SECRET){alert('Invite Link ไม่ถูกต้อง');history.replaceState(null,'',location.pathname+location.search);return false;}
     if(data.exp&&Date.now()>data.exp){alert('Invite Link หมดอายุแล้ว (7 วัน) กรุณาขอ Link ใหม่จาก Admin');history.replaceState(null,'',location.pathname+location.search);return false;}
+    // Auto-save Client ID into user's browser if included in invite
+    if(data.cid&&data.cid.includes('.apps.googleusercontent.com')){
+      localStorage.setItem('gp_oauth_client_id',data.cid);
+    }
     const arr=getUsers();
     const existing=arr.findIndex(u=>u.email===data.email);
     if(existing>=0){arr[existing]={...arr[existing],role:data.role,sessionRevoked:false};}
