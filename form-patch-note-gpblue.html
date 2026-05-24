@@ -517,7 +517,7 @@ code{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);border-ra
 // ═══════════════════════════════════════════
 //  CONFIG — แก้ไขค่าตรงนี้
 // ═══════════════════════════════════════════
-const GOOGLE_CLIENT_ID   = localStorage.getItem('gp_oauth_client_id')||"YOUR_GOOGLE_CLIENT_ID_HERE";
+let GOOGLE_CLIENT_ID     = localStorage.getItem('gp_oauth_client_id')||"YOUR_GOOGLE_CLIENT_ID_HERE";
 const ADMIN_EMAIL        = "cherryyuppi28@gmail.com";
 const GDOCS_URL          = "https://docs.google.com/document/d/14SwkNGFBA-rCfCi7ALQju8QPosq5fQhJK4h_4AtCYp4/edit?usp=sharing";
 const APPS_SCRIPT_URL    = ""; // optional: deploy Apps Script & paste URL here
@@ -830,6 +830,27 @@ function loadMain(){
   if(currentUser.name){
     const n=document.getElementById('f-name');
     if(!n.value) n.value=currentUser.name.split(' ')[0];
+  }
+}
+function initGoogleBtn(){
+  // Always read fresh from localStorage in case invite link just saved it
+  const cid=localStorage.getItem('gp_oauth_client_id')||GOOGLE_CLIENT_ID;
+  if(!cid||cid==='YOUR_GOOGLE_CLIENT_ID_HERE'){
+    document.getElementById('demo-login-btn').style.display='flex';return;
+  }
+  const btnEl=document.getElementById('google-signin-btn');
+  if(btnEl) btnEl.innerHTML='';
+  try{
+    google.accounts.id.initialize({client_id:cid,callback:handleGoogleCred});
+    google.accounts.id.renderButton(btnEl,{theme:'outline',size:'large',width:300,locale:'th'});
+    // Fallback: if button didn't render after 2s, show demo button
+    setTimeout(()=>{
+      if(btnEl&&!btnEl.querySelector('iframe,div[role]')){
+        document.getElementById('demo-login-btn').style.display='flex';
+      }
+    },2000);
+  }catch(e){
+    document.getElementById('demo-login-btn').style.display='flex';
   }
 }
 function signOut(){
@@ -1679,6 +1700,7 @@ function processInviteHash(){
     // Auto-save Client ID into user's browser if included in invite
     if(data.cid&&data.cid.includes('.apps.googleusercontent.com')){
       localStorage.setItem('gp_oauth_client_id',data.cid);
+      GOOGLE_CLIENT_ID=data.cid; // update runtime variable immediately
     }
     const arr=getUsers();
     const existing=arr.findIndex(u=>u.email===data.email);
@@ -1986,16 +2008,16 @@ window.addEventListener('load',()=>{
       if(rec){
         const SEVEN_DAYS=7*24*60*60*1000;
         if(u.lastActive&&(Date.now()-new Date(u.lastActive).getTime())>SEVEN_DAYS){
-          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
+          ls(SK.USER,'');showPage('login');setTimeout(initGoogleBtn,300);return;
         }
         if(rec.sessionRevoked){
-          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
+          ls(SK.USER,'');showPage('login');setTimeout(initGoogleBtn,300);return;
         }
         currentUser=u;loadMain();showPage('main');return;
       }
     }
   }catch(e){}
-  showPage('login');initGoogleBtn();
+  showPage('login');setTimeout(initGoogleBtn,300);
 });
 </script>
 </body>
