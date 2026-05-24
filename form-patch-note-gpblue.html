@@ -788,11 +788,17 @@ function doLogin(email,name,picture){
   const e=email.toLowerCase().trim();
   const u=getUserRecord(e);
   currentUser={email:e,name,picture,role:u?.role||null};
-  ls(SK.USER,JSON.stringify(currentUser));
   if(u){
+    // Clear sessionRevoked + record lastLogin in users list
+    const arr=getUsers();
+    const idx=arr.findIndex(x=>x.email===e);
+    if(idx>=0){arr[idx].sessionRevoked=false;arr[idx].lastLogin=now();ls(SK.USERS,JSON.stringify(arr));}
+    // Save session with lastActive timestamp
+    ls(SK.USER,JSON.stringify({...currentUser,lastActive:now()}));
     addLog(e,name,'success');
     loadMain();showPage('main');
   } else {
+    ls(SK.USER,'');
     addLog(e,name,'denied');
     document.getElementById('denied-email').textContent=e;
     showPage('denied');
@@ -815,6 +821,10 @@ function loadMain(){
     el.style.display=hasPerm(currentUser.email,'logs')?'':'none';
   });
   document.getElementById('demo-form-banner').style.display=isDemoMode?'flex':'none';
+  // Refresh lastActive timestamp on every main page load
+  if(!isDemoMode){
+    try{const s=JSON.parse(ls(SK.USER)||'{}');if(s.email)ls(SK.USER,JSON.stringify({...s,lastActive:now()}));}catch(e){}
+  }
   buildSectionMenu();
   if(currentUser.name){
     const n=document.getElementById('f-name');
@@ -1640,6 +1650,13 @@ function changeRole(email,role){
   const arr=getUsers().map(u=>u.email===email?{...u,role}:u);
   ls(SK.USERS,JSON.stringify(arr));renderPerms();toast('✅','เปลี่ยน Role สำเร็จ');
 }
+function revokeUserSession(email){
+  if(email===ADMIN_EMAIL.toLowerCase()){toast('⚠️','ไม่สามารถล้าง Session ของ Admin ได้',true);return;}
+  const arr=getUsers().map(u=>u.email===email?{...u,sessionRevoked:true,revokedAt:now()}:u);
+  ls(SK.USERS,JSON.stringify(arr));
+  renderPerms();
+  toast('🔒','ล้าง Login ของ '+email+' แล้ว — ต้อง Login ใหม่เพื่อเข้าใช้');
+}
 function renderPerms(){
   const arr=getUsers();
   document.getElementById('email-count').textContent=arr.length;
@@ -1647,16 +1664,29 @@ function renderPerms(){
   el.innerHTML=arr.map(u=>{
     const r=ROLES[u.role]||ROLES.editor;
     const isOwner=u.email===ADMIN_EMAIL.toLowerCase();
-    return `<div class="email-item">
-      <div class="email-item-l">
-        <div class="dot" style="background:${r.color}"></div>
-        <span style="font-size:13px">${u.email}</span>
+    const revoked=u.sessionRevoked===true;
+    const lastLoginStr=u.lastLogin
+      ?new Date(u.lastLogin).toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
+      :'ยังไม่เคย Login';
+    return `<div class="email-item" style="flex-direction:column;align-items:stretch;gap:8px;padding:12px 14px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="dot" style="background:${r.color};flex-shrink:0"></div>
+        <span style="font-size:13px;flex:1;min-width:0;word-break:break-all">${u.email}</span>
+        ${revoked?`<span style="font-size:10px;font-weight:700;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);padding:2px 8px;border-radius:20px;white-space:nowrap">🔒 รอ Login ใหม่</span>`:''}
         ${isOwner?`<span class="badge badge-admin">⚡ Owner</span>`:`
           <select onchange="changeRole('${u.email}',this.value)" style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;padding:3px 8px;cursor:pointer">
-            ${Object.entries(ROLES).map(([k,v])=>`<option value="${k}"${u.role===k?' selected':''}>${v.label}</option>`).join('')}
+            ${Object.entries(ROLES).map(([k,v])=>`<option value="${k}"${u.role===k?' selected':''} >${v.label}</option>`).join('')}
           </select>`}
       </div>
-      ${isOwner?'':`<button class="btn btn-danger btn-sm" onclick="removeUser('${u.email}')">ลบ</button>`}
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+        <span style="font-size:11px;color:var(--text3)">🕐 Last Login: ${lastLoginStr}</span>
+        <div style="display:flex;gap:6px">
+          ${isOwner?'':`<button class="btn btn-sm" onclick="revokeUserSession('${u.email}')"
+            style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--yellow);font-size:11px"
+            title="บังคับให้ User Login ใหม่">🔒 ล้าง Login</button>`}
+          ${isOwner?'':`<button class="btn btn-danger btn-sm" onclick="removeUser('${u.email}')" style="font-size:11px">ลบ</button>`}
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1930,7 +1960,19 @@ window.addEventListener('load',()=>{
     const saved=ls(SK.USER);
     if(saved&&saved!==''){
       const u=JSON.parse(saved);
-      if(getUserRecord(u.email)){currentUser=u;loadMain();showPage('main');return;}
+      const rec=getUserRecord(u.email);
+      if(rec){
+        // Check 7-day inactivity
+        const SEVEN_DAYS=7*24*60*60*1000;
+        if(u.lastActive&&(Date.now()-new Date(u.lastActive).getTime())>SEVEN_DAYS){
+          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
+        }
+        // Check admin-revoked session
+        if(rec.sessionRevoked){
+          ls(SK.USER,'');showPage('login');initGoogleBtn();return;
+        }
+        currentUser=u;loadMain();showPage('main');return;
+      }
     }
   }catch(e){}
   showPage('login');initGoogleBtn();
