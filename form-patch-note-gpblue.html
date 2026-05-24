@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form — Patch Note [GP:BLUE] v2</title>
+<script src="https://accounts.google.com/gsi/client"></script>
+<style>
+:root{--bg:#070d1a;--bg2:#0d1526;--card:#111d30;--card2:#162236;--border:#1e3556;--border2:#2a4872;--blue:#3b82f6;--blue2:#60a5fa;--cyan:#06b6d4;--text:#e8eef8;--text2:#8ba3c4;--text3:#4a6383;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--purple:#a855f7;--shadow:0 0 40px rgba(59,130,246,.08)}
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Noto Sans Thai',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 25% 20%,rgba(59,130,246,.05) 0%,transparent 50%),radial-gradient(ellipse at 75% 80%,rgba(6,182,212,.03) 0%,transparent 50%);pointer-events:none;z-index:0}
+.page{display:none;min-height:100vh;position:relative;z-index:1}.page.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* Login/Setup/Denied */
+.center-page{align-items:center;justify-content:center;padding:24px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:50px 42px;max-width:420px;width:100%;text-align:center;box-shadow:var(--shadow);animation:fadeUp .5s ease}
+.login-logo{width:76px;height:76px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 26px;box-shadow:0 0 36px rgba(59,130,246,.3)}
+.login-title{font-size:22px;font-weight:700;margin-bottom:4px}
+.login-brand{font-size:17px;font-weight:800;color:var(--blue2);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:32px;line-height:1.6}
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.divider span{font-size:11px;color:var(--text3)}
+#google-signin-btn{display:flex;justify-content:center}
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:40px;max-width:640px;width:100%;animation:fadeUp .5s ease}
+.setup-step{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,53,86,.4);font-size:13px;color:var(--text2);line-height:1.7}
+.setup-step:last-child{border-bottom:none}
+.step-num{min-width:24px;height:24px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue2)}
+code{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);border-radius:4px;padding:1px 6px;font-size:12px;color:var(--cyan);font-family:Consolas,monospace}
+.denied-card{background:var(--card);border:1px solid rgba(239,68,68,.2);border-radius:22px;padding:50px 42px;max-width:440px;width:100%;text-align:center;animation:fadeUp .5s ease}
+.denied-icon{width:76px;height:76px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 26px}
+/* Main page */
+#page-main{flex-direction:column}
+.topbar{height:60px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:100}
+.topbar-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.topbar-title{font-size:14px;font-weight:700;flex:1}
+.topbar-title span{color:var(--blue2)}
+.user-chip{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden;flex-shrink:0}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-name{font-size:13px;color:var(--text2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:2px;overflow-x:auto}
+.tab-btn{padding:13px 16px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text3);font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab-btn:hover{color:var(--text2)}.tab-btn.active{color:var(--blue2);border-bottom-color:var(--blue)}
+.tab-content{display:none}.tab-content.active{display:block}
+.main-content{padding:28px 20px;max-width:760px;width:100%;margin:0 auto}
+.main-wide{padding:28px 20px;max-width:1000px;width:100%;margin:0 auto}
+.section-hdr{margin-bottom:24px}.section-title{font-size:20px;font-weight:700;margin-bottom:5px}
+.section-desc{font-size:13px;color:var(--text2)}
+/* Buttons */
+.btn{padding:10px 20px;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(59,130,246,.35)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-secondary:hover{border-color:var(--border2);color:var(--text)}
+.btn-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.btn-success:hover{background:rgba(16,185,129,.2)}
+.btn-danger{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+.btn-danger:hover{background:rgba(239,68,68,.15)}
+.btn-add{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--blue2);padding:9px 16px}
+.btn-add:hover{background:rgba(59,130,246,.2)}
+.btn-astek{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);color:var(--cyan)}
+.btn-astek:hover{background:rgba(6,182,212,.2)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+.logout-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:5px 11px;color:var(--text3);font-size:12px;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+/* Form elements */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:14px}
+.form-group{margin-bottom:20px}.form-group:last-child{margin-bottom:0}
+.f-label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.f-label .req{color:var(--red);margin-left:3px}
+.f-label .opt{color:var(--text3);font-size:10px;font-weight:400;text-transform:none;margin-left:5px}
+.f-input,.f-textarea,.f-select{width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;outline:none;transition:all .2s;font-family:inherit}
+.f-input:focus,.f-textarea:focus,.f-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.f-input::placeholder,.f-textarea::placeholder{color:var(--text3)}
+.f-textarea{resize:vertical;min-height:80px}
+.f-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a6383' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer}
+.date-input{width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;outline:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.date-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.date-input::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) saturate(5) hue-rotate(175deg);cursor:pointer}
+.name-wrap{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:9px;overflow:hidden;transition:all .2s}
+.name-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.name-prefix{padding:11px 14px;background:rgba(59,130,246,.07);border-right:1px solid var(--border);font-size:14px;font-weight:700;color:var(--blue2);white-space:nowrap}
+.name-input{flex:1;padding:11px 14px;background:transparent;border:none;color:var(--text);font-size:14px;outline:none}
+.name-input::placeholder{color:var(--text3)}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px}
+.company-btn{padding:10px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;position:relative}
+.company-btn:hover{border-color:var(--border2);color:var(--text)}
+.company-btn.selected{background:rgba(59,130,246,.1);border-color:var(--blue);color:var(--blue2)}
+/* Section blocks */
+.section-block{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.section-block-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--card2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.section-block-icon{font-size:18px}
+.section-block-label{font-size:14px;font-weight:700;flex:1}
+.section-block-body{padding:18px}
+.section-sub-header{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding:8px 0;margin:12px 0 8px;border-top:1px solid var(--border)}
+.instance-block{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:9px;padding:16px;margin-bottom:10px;position:relative}
+.instance-num{font-size:11px;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+/* Image upload */
+.img-upload-wrap{border:1px dashed var(--border);border-radius:9px;padding:16px;background:var(--bg2)}
+.img-tabs{display:flex;gap:6px;margin-bottom:12px}
+.img-tab{padding:5px 12px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text3);font-size:12px;cursor:pointer;transition:all .2s}
+.img-tab.active{background:rgba(59,130,246,.1);border-color:var(--blue);color:var(--blue2)}
+.img-preview-wrap{margin-top:10px;display:none}
+.img-preview{max-width:200px;max-height:120px;border-radius:6px;border:1px solid var(--border)}
+.img-size-badge{font-size:11px;color:var(--text3);margin-top:4px}
+.img-clear{margin-top:6px;padding:4px 10px;background:transparent;border:1px solid rgba(239,68,68,.2);border-radius:5px;color:var(--red);font-size:11px;cursor:pointer}
+/* DateRange */
+.daterange-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.daterange-row{display:flex;flex-direction:column;gap:5px}
+.daterange-row label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase}
+.daterange-preview{font-size:12px;color:var(--cyan);margin-top:6px;padding:8px 12px;background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.15);border-radius:7px}
+/* Item table */
+.item-table{width:100%;border-collapse:collapse;font-size:13px}
+.item-table th{padding:9px 12px;background:var(--bg2);text-align:left;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.item-table td{padding:8px 10px;border-bottom:1px solid rgba(30,53,86,.4)}
+.item-table tr:last-child td{border-bottom:none}
+.item-input{width:100%;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}
+.item-input:focus{border-color:var(--blue)}
+/* Dropdown add section */
+.add-section-wrap{position:relative;display:inline-block}
+.add-section-menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;min-width:280px;z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.4);max-height:400px;overflow-y:auto}
+.add-section-menu.hidden{display:none}
+.add-menu-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2)}
+.add-menu-item:hover{background:rgba(59,130,246,.08);color:var(--text)}
+.add-menu-icon{font-size:16px;width:24px;text-align:center}
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700}
+.badge-admin{background:rgba(59,130,246,.12);color:var(--blue2);border:1px solid rgba(59,130,246,.25)}
+.badge-blue{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+.badge-purple{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.25)}
+.badge-editor{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+/* Permissions list */
+.perm-input{flex:1;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none}
+.perm-input:focus{border-color:var(--blue)}
+.email-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;margin-bottom:8px}
+.email-item-l{display:flex;align-items:center;gap:10px}
+.dot{width:8px;height:8px;border-radius:50%}
+/* Logs */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.stat-val{font-size:28px;font-weight:700;color:var(--blue2)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:4px;text-transform:uppercase}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+.log-table{width:100%;border-collapse:collapse;font-size:13px}
+.log-table th{padding:10px 14px;background:var(--bg2);text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.log-table td{padding:10px 14px;border-bottom:1px solid rgba(30,53,86,.4);color:var(--text2)}
+.log-table tr:last-child td{border-bottom:none}
+.log-table tr:hover td{background:rgba(59,130,246,.02)}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700}
+.s-ok{background:rgba(16,185,129,.1);color:var(--green)}
+.s-no{background:rgba(239,68,68,.1);color:var(--red)}
+/* Response cards */
+.resp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.resp-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;gap:12px;flex-wrap:wrap}
+.resp-card-info{flex:1}
+.resp-date{font-size:17px;font-weight:700;margin-bottom:3px}
+.resp-meta{font-size:12px;color:var(--text2)}
+.resp-body{padding:18px;border-top:1px solid var(--border);display:none}
+.resp-body.open{display:block}
+.resp-section-item{padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;font-size:13px}
+.resp-section-title{font-weight:700;margin-bottom:6px}
+.resp-field{color:var(--text2);margin-bottom:4px}
+.resp-field strong{color:var(--text3);margin-right:5px}
+/* History */
+.hist-item{padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px}
+.hist-who{font-weight:700;font-size:13px;margin-bottom:4px}
+.hist-when{font-size:12px;color:var(--text2)}
+.hist-detail{font-size:12px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid rgba(30,53,86,.5)}
+/* Demo banner */
+.demo-banner{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:9px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:var(--yellow);display:flex;align-items:center;gap:8px}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--card2);border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--green);box-shadow:0 8px 28px rgba(0,0,0,.35);transform:translateY(110px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}
+/* Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:999;align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:440px;width:90%;animation:fadeUp .3s ease}
+.modal h3{margin-bottom:12px;font-size:17px}
+.modal p{color:var(--text2);font-size:14px;margin-bottom:22px;line-height:1.6}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.modal-input{width:100%;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px}
+.modal-input:focus{border-color:var(--blue)}
+.edit-modal{max-width:700px;max-height:85vh;overflow-y:auto}
+.role-select{width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none;appearance:none;cursor:pointer}
+.role-select:focus{border-color:var(--blue)}
+/* Status buttons */
+.status-btns{display:flex;gap:8px;flex-wrap:wrap}
+.status-btn{padding:8px 18px;border:2px solid transparent;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;background:var(--bg2)}
+.status-btn[data-val="แก้ไขแล้ว"]{border-color:rgba(16,185,129,.3);color:var(--green)}
+.status-btn[data-val="แก้ไขแล้ว"].active,.status-btn[data-val="แก้ไขแล้ว"]:hover{background:rgba(16,185,129,.15);border-color:var(--green);box-shadow:0 0 12px rgba(16,185,129,.2)}
+.status-btn[data-val="กำลังปรับปรุง"]{border-color:rgba(245,158,11,.3);color:var(--yellow)}
+.status-btn[data-val="กำลังปรับปรุง"].active,.status-btn[data-val="กำลังปรับปรุง"]:hover{background:rgba(245,158,11,.15);border-color:var(--yellow);box-shadow:0 0 12px rgba(245,158,11,.2)}
+.status-btn[data-val="ปิดระบบ"]{border-color:rgba(239,68,68,.3);color:var(--red)}
+.status-btn[data-val="ปิดระบบ"].active,.status-btn[data-val="ปิดระบบ"]:hover{background:rgba(239,68,68,.15);border-color:var(--red);box-shadow:0 0 12px rgba(239,68,68,.2)}
+@media(max-width:580px){.login-card,.denied-card{padding:32px 20px}.stats-row{grid-template-columns:1fr}.daterange-wrap{grid-template-columns:1fr}.main-content,.main-wide{padding:16px 12px}.topbar-title{font-size:12px}.user-name{display:none}}
+/* Grid table — Sub Class horizontal */
+.grid-tbl-wrap{overflow-x:auto;margin-bottom:10px}
+.grid-tbl{border-collapse:collapse;min-width:100%;font-size:13px}
+.grid-tbl th{padding:9px 12px;background:var(--bg2);text-align:center;font-size:11px;font-weight:700;color:var(--text3);border:1px solid var(--border);white-space:nowrap}
+.grid-tbl td{padding:7px 10px;border:1px solid rgba(30,53,86,.4);vertical-align:top;min-width:160px}
+.grid-tbl .row-hdr{background:var(--bg2);font-size:11px;font-weight:700;color:var(--text3);white-space:nowrap;min-width:auto!important;text-align:left}
+/* Card grid — New Class */
+.card-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:620px){.card-grid-2{grid-template-columns:1fr}}
+/* Section table — Equipment / Events */
+.sec-tbl-wrap{overflow-x:auto;margin-bottom:10px}
+.sec-tbl{border-collapse:collapse;width:100%;font-size:13px}
+.sec-tbl th{padding:8px 10px;background:var(--bg2);text-align:left;font-size:11px;font-weight:700;color:var(--text3);border:1px solid var(--border);white-space:nowrap}
+.sec-tbl td{padding:6px 8px;border:1px solid rgba(30,53,86,.3);vertical-align:top}
+.sec-tbl .n-col{background:var(--bg2);text-align:center;font-weight:700;font-size:12px;color:var(--text3);white-space:nowrap}
+/* Edit mode banner */
+.edit-banner{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:12px 18px;margin-bottom:16px;align-items:center;gap:12px;flex-wrap:wrap;display:none}
+.edit-banner.show{display:flex}
+.edit-banner-txt{flex:1;font-size:13px;color:var(--yellow);line-height:1.5}
+/* Sub tabs — History */
+.sub-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.stab{padding:8px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text3);font-size:13px;cursor:pointer;font-weight:600;transition:all .2s}
+.stab:hover{color:var(--text2)}.stab.active{background:rgba(59,130,246,.1);border-color:var(--blue);color:var(--blue2)}
+.stab-pane{display:none}.stab-pane.active{display:block}
+/* Colored history items */
+.hist-item.h-submit{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.05)}
+.hist-item.h-submit .hist-who{color:var(--green)}
+.hist-item.h-edit{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.05)}
+.hist-item.h-edit .hist-who{color:var(--yellow)}
+.hist-item.h-delete{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05)}
+.hist-item.h-delete .hist-who{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- PAGE: SETUP -->
+<div id="page-setup" class="page center-page">
+  <div class="setup-card">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+      <div style="width:50px;height:50px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px">⚙️</div>
+      <div><div style="font-size:18px;font-weight:700">ตั้งค่า Google OAuth Client ID</div><div style="font-size:13px;color:var(--text2)">ทำครั้งเดียว — บันทึกอัตโนมัติในเบราว์เซอร์</div></div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.6px;margin-bottom:14px">📋 วิธีสร้าง Google OAuth Client ID</div>
+      <div class="setup-step"><div class="step-num">1</div><div>เปิด <a href="https://console.cloud.google.com" target="_blank" style="color:var(--blue2)">console.cloud.google.com</a> → <strong>New Project</strong> → ตั้งชื่อ เช่น <em>GP-Blue Form</em></div></div>
+      <div class="setup-step"><div class="step-num">2</div><div><strong>APIs &amp; Services</strong> → <strong>OAuth consent screen</strong> → เลือก External → กรอกชื่อ App → Save</div></div>
+      <div class="setup-step"><div class="step-num">3</div><div><strong>Credentials</strong> → <strong>+ Create Credentials</strong> → <strong>OAuth client ID</strong> → Application type: <strong>Web application</strong></div></div>
+      <div class="setup-step"><div class="step-num">4</div><div><strong>Authorized JavaScript origins</strong> → เพิ่ม URL หลักของไซต์ เช่น <code>https://yourdomain.com</code> (ไม่มี path ต่อท้าย)</div></div>
+      <div class="setup-step"><div class="step-num">5</div><div>คลิก <strong>Create</strong> → Copy <strong>Client ID</strong> (ลงท้ายด้วย <code>.apps.googleusercontent.com</code>) → วางด้านล่าง</div></div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.5px;display:block;margin-bottom:8px">GOOGLE CLIENT ID</label>
+      <input id="setup-client-id-input" type="text" placeholder="xxxxxx.apps.googleusercontent.com"
+        style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;font-family:monospace"
+        oninput="document.getElementById('setup-save-btn').disabled=!this.value.trim()">
+      <div id="setup-client-id-err" style="font-size:12px;color:var(--red);margin-top:6px;display:none">⚠️ Client ID ไม่ถูกต้อง — ต้องลงท้ายด้วย .apps.googleusercontent.com</div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button id="setup-save-btn" class="btn btn-primary" onclick="saveClientId()" style="flex:2" disabled>✅ บันทึกและเข้าสู่ระบบ</button>
+      <button class="btn btn-secondary" onclick="enterDemoMode()" style="flex:1">🎮 Demo Mode</button>
+    </div>
+
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:12px;color:var(--text2)">
+      💡 Client ID จะถูกเก็บใน Browser (localStorage) บน Browser นี้เท่านั้น — สมาชิกคนอื่นต้อง Setup ที่ Browser ของตัวเอง
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: LOGIN -->
+<div id="page-login" class="page center-page">
+  <div class="login-card">
+    <div class="login-logo">📋</div>
+    <div class="login-title">Form — Patch Note</div>
+    <div class="login-brand">[GP:BLUE]</div>
+    <div class="login-sub">กรุณาเข้าสู่ระบบด้วย Google Account<br>เพื่อเข้าถึง Form กรอกข้อมูล</div>
+    <div class="divider"><span>SIGN IN WITH GOOGLE</span></div>
+    <div id="google-signin-btn"></div>
+    <div id="demo-banner-login" class="demo-banner" style="display:none;margin-top:14px;text-align:left"><span>⚠️</span><span><strong>Demo Mode</strong></span></div>
+    <button id="demo-login-btn" class="btn btn-secondary" onclick="showModal('demo-modal')" style="display:none;width:100%;margin-top:10px;justify-content:center">🎮 Demo Login</button>
+  </div>
+</div>
+
+<!-- PAGE: DENIED -->
+<div id="page-denied" class="page center-page">
+  <div class="denied-card" style="margin:auto">
+    <div class="denied-icon">🚫</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:10px">ไม่มีสิทธิ์เข้าถึง</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:8px;line-height:1.7">อีเมล <strong id="denied-email" style="color:var(--red)"></strong><br>ยังไม่ได้รับอนุญาต</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:28px">กรุณาติดต่อ <span style="color:var(--blue2)">Cherikx</span> เพื่อขอสิทธิ์</div>
+    <button class="btn btn-secondary" onclick="signOut()" style="width:100%;justify-content:center">← กลับหน้า Login</button>
+  </div>
+</div>
+
+<!-- PAGE: MAIN -->
+<div id="page-main" class="page" style="flex-direction:column">
+  <div class="topbar">
+    <div class="topbar-logo">📋</div>
+    <div class="topbar-title">Form — Patch Note <span>[GP:BLUE]</span></div>
+    <div id="admin-badge-wrap"></div>
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">👤</div>
+      <span class="user-name" id="user-name">...</span>
+    </div>
+    <button class="logout-btn" onclick="clearClientId()" style="margin-right:6px;border-color:rgba(245,158,11,.3);color:var(--yellow)" title="เปลี่ยน Google Client ID">⚙️</button>
+    <button class="logout-btn" onclick="signOut()">ออกจากระบบ</button>
+  </div>
+  <div class="tabs-bar" id="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('form',this)">📝 กรอกข้อมูล</button>
+    <button class="tab-btn" onclick="switchTab('responses',this)">📊 My Responses</button>
+    <button class="tab-btn" onclick="switchTab('history',this)">📜 Edit History</button>
+    <button class="tab-btn admin-only" onclick="switchTab('perms',this)" style="display:none">👥 จัดการสิทธิ์</button>
+    <button class="tab-btn admin-only" onclick="switchTab('logs',this)" style="display:none">📋 Login Log</button>
+  </div>
+
+  <!-- TAB: FORM -->
+  <div id="tab-form" class="tab-content active">
+    <div class="main-content">
+      <div id="demo-form-banner" class="demo-banner" style="display:none"><span>⚠️</span><strong>Demo Mode</strong> — ไม่มีการส่งข้อมูลจริง</div>
+      <div id="edit-mode-banner" class="edit-banner"><span style="font-size:18px">✏️</span><div class="edit-banner-txt">โหมดแก้ไข</div><button class="btn btn-secondary btn-sm" onclick="cancelEdit()">✕ ยกเลิก</button></div>
+      <div class="section-hdr">
+        <div class="section-title">📝 กรอกข้อมูล Patch Note</div>
+        <div class="section-desc">กรอกข้อมูลให้ครบก่อนกดส่ง</div>
+      </div>
+      <div class="form-card">
+        <div class="form-group">
+          <label class="f-label">ชื่อและทีมของผู้ใส่ข้อมูล<span class="req">*</span></label>
+          <div class="name-wrap"><div class="name-prefix">GP :</div><input type="text" class="name-input" id="f-name" placeholder="ชื่อของคุณ เช่น BLUE, Cherry..." maxlength="30"></div>
+        </div>
+        <div class="form-group">
+          <label class="f-label">บริษัทของผู้ใส่ข้อมูล<span class="req">*</span></label>
+          <div class="btn-group" id="company-group"><button type="button" class="company-btn" onclick="pickCompany(this,'EXE')">🏢 EXE</button></div>
+          <input type="hidden" id="f-company">
+        </div>
+        <div class="form-group">
+          <label class="f-label">Patch Note ประจำวันที่<span class="req">*</span></label>
+          <input type="date" class="date-input" id="f-date">
+        </div>
+      </div>
+
+      <!-- Dynamic sections -->
+      <div id="sections-container"></div>
+      <!-- Item tables -->
+      <div id="tables-container"></div>
+
+      <!-- Add buttons -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <div class="add-section-wrap">
+          <button class="btn btn-add" onclick="toggleSectionMenu()" id="add-section-btn">＋ เพิ่มหัวข้อ</button>
+          <div class="add-section-menu hidden" id="section-menu"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="addItemTable()">🎁 สร้างตาราง</button>
+      </div>
+
+      <!-- Submit area -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="submit-btn" onclick="confirmSubmit()">✉️ ส่งข้อมูล</button>
+        <button class="btn btn-secondary" onclick="confirmClear()">🔄 ล้างข้อมูล</button>
+        <button class="btn btn-secondary" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none">✕ ยกเลิกการแก้ไข</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: RESPONSES -->
+  <div id="tab-responses" class="tab-content">
+    <div class="main-content">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px">
+        <div class="section-hdr" style="margin-bottom:0">
+          <div class="section-title">📊 My Responses</div>
+          <div class="section-desc">ข้อมูลที่กรอกไปแล้วทั้งหมด</div>
+        </div>
+      </div>
+      <div id="responses-list"></div>
+    </div>
+  </div>
+
+  <!-- TAB: HISTORY -->
+  <div id="tab-history" class="tab-content">
+    <div class="main-content">
+      <div class="section-hdr">
+        <div class="section-title">📜 Edit History</div>
+        <div class="section-desc">ประวัติการแก้ไขและการส่งข้อมูล</div>
+      </div>
+      <div class="sub-tabs">
+        <button class="stab active" onclick="switchHistTab('all',this)">📋 ประวัติทั้งหมด</button>
+        <button class="stab" onclick="switchHistTab('submit',this)">📝 ส่งข้อมูล</button>
+        <button class="stab" onclick="switchHistTab('edit',this)">✏️ การแก้ไข</button>
+        <button class="stab" onclick="switchHistTab('delete',this)">🗑 ลบข้อมูล</button>
+      </div>
+      <div id="hist-pane-all" class="stab-pane active"><div id="hist-all-list"></div></div>
+      <div id="hist-pane-submit" class="stab-pane"><div id="hist-submit-list"></div></div>
+      <div id="hist-pane-edit" class="stab-pane"><div id="hist-edit-list"></div></div>
+      <div id="hist-pane-delete" class="stab-pane"><div id="hist-delete-list"></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: PERMISSIONS (admin) -->
+  <div id="tab-perms" class="tab-content">
+    <div class="main-content">
+      <div class="section-hdr">
+        <div class="section-title">👥 จัดการสิทธิ์การเข้าถึง</div>
+        <div class="section-desc">เพิ่ม / ลบ / เปลี่ยน Role ผู้ใช้งาน</div>
+      </div>
+      <div class="form-card">
+        <div class="f-label" style="margin-bottom:10px">เพิ่มผู้ใช้ใหม่</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+          <input type="email" class="perm-input" id="new-email" placeholder="email@gmail.com" style="min-width:200px" onkeypress="if(event.key==='Enter'){event.preventDefault();addUser()}">
+          <select class="role-select" id="new-role" style="width:180px">
+            <option value="admin">⚡ Admin</option>
+            <option value="gp_blue" selected>🔵 GP: BLUE</option>
+            <option value="gp_purple">🟣 GP: PURPLE</option>
+            <option value="editor">✏️ Editor</option>
+          </select>
+          <button class="btn btn-add" onclick="addUser()">+ เพิ่ม</button>
+        </div>
+        <div class="f-label" style="margin-bottom:10px">ผู้ใช้ที่มีสิทธิ์ (<span id="email-count">0</span>)</div>
+        <div id="email-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: LOGS (admin) -->
+  <div id="tab-logs" class="tab-content">
+    <div class="main-wide">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px">
+        <div class="section-hdr" style="margin-bottom:0">
+          <div class="section-title">📋 Login Log</div>
+          <div class="section-desc">ประวัติการเข้าสู่ระบบทั้งหมด</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="exportLogs()">⬇️ Export CSV</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmClearLogs()">🗑 ล้าง Log</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-val" id="s-total">0</div><div class="stat-label">ทั้งหมด</div></div>
+        <div class="stat-card"><div class="stat-val" id="s-ok" style="color:var(--green)">0</div><div class="stat-label">เข้าสำเร็จ</div></div>
+        <div class="stat-card"><div class="stat-val" id="s-no" style="color:var(--red)">0</div><div class="stat-label">ถูกปฏิเสธ</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="log-table">
+          <thead><tr><th>#</th><th>ชื่อ</th><th>Email</th><th>วันเวลา</th><th>สถานะ</th></tr></thead>
+          <tbody id="log-body"><tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">ยังไม่มีข้อมูล</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirm Submit -->
+<div class="overlay" id="modal-confirm-submit">
+  <div class="modal">
+    <h3>✉️ ยืนยันการส่งข้อมูล</h3>
+    <p>ตรวจสอบข้อมูลให้ถูกต้องก่อนกดยืนยัน<br>หลังส่งแล้วยังสามารถ Edit ได้ในหน้า My Responses</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-confirm-submit')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="doSubmit()">✅ ยืนยันส่งข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirm Clear -->
+<div class="overlay" id="modal-confirm-clear">
+  <div class="modal">
+    <h3>🔄 ยืนยันการล้างข้อมูล</h3>
+    <p>ข้อมูลทั้งหมดในฟอร์มจะถูกล้างออก<br>ไม่สามารถกู้คืนได้ ต้องการดำเนินการต่อหรือไม่?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-confirm-clear')">ยกเลิก</button>
+      <button class="btn btn-danger" onclick="doClear()">🗑 ล้างข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirm Clear Logs -->
+<div class="overlay" id="modal-confirm-clear-logs">
+  <div class="modal">
+    <h3>🗑 ยืนยันการล้าง Log</h3>
+    <p>Log การเข้าสู่ระบบทั้งหมดจะถูกลบออก ต้องการดำเนินการต่อหรือไม่?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-confirm-clear-logs')">ยกเลิก</button>
+      <button class="btn btn-danger" onclick="doClearLogs()">ล้าง Log</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Demo Login -->
+<div class="overlay" id="demo-modal">
+  <div class="modal">
+    <h3>🎮 Demo Mode Login</h3>
+    <p>กรอก Email เพื่อจำลองการ Login (ไม่ต้องใช้ Google OAuth)</p>
+    <input type="email" class="modal-input" id="demo-email" placeholder="email@gmail.com" onkeypress="if(event.key==='Enter')demoLogin()">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('demo-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="demoLogin()">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Google Docs -->
+<div class="overlay" id="modal-gdocs">
+  <div class="modal" style="max-width:520px">
+    <h3>📤 ส่งไป Google Docs</h3>
+    <p style="margin-bottom:12px">ข้อมูลถูกจัดรูปแบบแล้ว กด <strong>คัดลอก & เปิด</strong> จากนั้นวางใน Google Docs</p>
+    <textarea id="gdocs-preview" class="f-textarea" rows="8" readonly style="font-family:Consolas,monospace;font-size:12px;margin-bottom:14px"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-gdocs')">ปิด</button>
+      <button class="btn btn-success" onclick="copyAndOpenDocs()">📋 คัดลอก & เปิด Google Docs</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="t-icon">✅</span><span id="t-msg">สำเร็จ</span></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIG — แก้ไขค่าตรงนี้
+// ═══════════════════════════════════════════
+const GOOGLE_CLIENT_ID   = localStorage.getItem('gp_oauth_client_id')||"YOUR_GOOGLE_CLIENT_ID_HERE";
+const ADMIN_EMAIL        = "cherryyuppi28@gmail.com";
+const GDOCS_URL          = "https://docs.google.com/document/d/14SwkNGFBA-rCfCi7ALQju8QPosq5fQhJK4h_4AtCYp4/edit?usp=sharing";
+const APPS_SCRIPT_URL    = ""; // optional: deploy Apps Script & paste URL here
+
+// ═══════════════════════════════════════════
+//  STORAGE KEYS
+// ═══════════════════════════════════════════
+const SK = {
+  USERS:'sb_users_v3', LOGS:'sb_logs_v3',
+  USER:'sb_user_v3', SUBS:'sb_subs_v3', HIST:'sb_hist_v3'
+};
+
+// ═══════════════════════════════════════════
+//  ROLES & PERMISSIONS
+// ═══════════════════════════════════════════
+const ROLES = {
+  admin:     {label:'⚡ Admin',      badge:'badge-admin',  color:'#60a5fa'},
+  gp_blue:   {label:'🔵 GP: BLUE',   badge:'badge-blue',   color:'#60a5fa'},
+  gp_purple: {label:'🟣 GP: PURPLE', badge:'badge-purple', color:'#a855f7'},
+  editor:    {label:'✏️ Editor',     badge:'badge-editor', color:'#10b981'}
+};
+const PERMS = {
+  admin:     ['fill','edit','view_all','history','manage','logs'],
+  gp_blue:   ['fill','edit','view_all','history'],
+  gp_purple: ['fill','edit','view_all','history'],
+  editor:    ['fill','edit','view_own','history']
+};
+
+// ═══════════════════════════════════════════
+//  SECTION DEFINITIONS (22 types)
+// ═══════════════════════════════════════════
+const SDEFS = {
+  server_merge:{label:'Server - Merge / New Sv.',icon:'🌐',fields:[
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  special_buff:{label:'Special Buff',icon:'⚡',multi:true,addLabel:'+ เพิ่มรายการ',tableLayout:true,fields:[
+    {k:'name',l:'ชื่อ Buff',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'duration',l:'ระยะเวลาของ Buff',t:'daterange',req:true},
+    {k:'note',l:'หมายเหตุ',t:'textarea',opt:true}
+  ]},
+  sub_class:{label:'Sub Class',icon:'⚔️',multi:true,addLabel:'+ เพิ่ม Sub Class',gridLayout:'horizontal',fields:[
+    {k:'order',l:'ลำดับ Class',t:'text',req:true,ph:'เช่น 6th Sub Class',mergeRow:true},
+    {k:'main_class',l:'ชื่อ Class หลัก',t:'text',req:true},
+    {k:'icon',l:'รูป Icon Sub Class',t:'image',req:true},
+    {k:'name',l:'ชื่อ Sub Class',t:'text',req:true}
+  ]},
+  new_class:{label:'NEW Class',icon:'🆕',multi:true,addLabel:'+ Sub Class',cardLayout:true,fields:[
+    {k:'class_name',l:'ชื่อ Class',t:'text',req:true,mergeInCard:true},
+    {k:'sub_name',l:'ชื่อ Sub Class',t:'text',req:true},
+    {k:'sub_icon',l:'รูป Icon Sub Class',t:'image',req:true},
+    {k:'char_image',l:'รูป Class Character',t:'image',opt:true}
+  ]},
+  episode_level:{label:'ปลดล็อค Episode / Max Level',icon:'🗺️',fields:[
+    {k:'_h1',l:'📖 ส่วนที่ 1: Episode',t:'header'},
+    {k:'ep_detail',l:'รายละเอียด',t:'textarea',opt:true},
+    {k:'ep_name',l:'ชื่อ Episode ที่ปลดล็อค',t:'text',opt:true},
+    {k:'ep_image',l:'รูปภาพประกอบ',t:'image',opt:true},
+    {k:'ep_note',l:'หมายเหตุ',t:'textarea',opt:true},
+    {k:'_h2',l:'📊 ส่วนที่ 2: Max Level',t:'header'},
+    {k:'lv_max',l:'Max Level ที่ปลดล็อค',t:'text',opt:true},
+    {k:'lv_detail',l:'รายละเอียด',t:'textarea',opt:true},
+    {k:'lv_note',l:'หมายเหตุ',t:'textarea',opt:true}
+  ]},
+  dungeon:{label:'Dungeon',icon:'🏰',multi:true,addLabel:'+ เพิ่มรายการ',tableLayout:true,fields:[
+    {k:'main_name',l:'รายชื่อ Dungeon หลัก',t:'text',req:true,ph:'เช่น Memory Stone'},
+    {k:'sub_name',l:'รายชื่อ Dungeon รอง',t:'text',opt:true,ph:'เช่น Mileage ขั้น 19'},
+    {k:'unlock',l:'เงื่อนไขการปลดล็อค',t:'textarea',opt:true},
+    {k:'reward',l:'รางวัลหลัก',t:'textarea',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true},
+    {k:'detail',l:'รายละเอียดเพิ่มเติม',t:'textarea',opt:true}
+  ]},
+  field_boss:{label:'Field Boss Event',icon:'👹',fields:[
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  rift:{label:'Rift',icon:'🌀',fields:[
+    {k:'name',l:'ชื่อ Rift',t:'text',req:true,ph:'เช่น Rift - Diena'},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  dungeon_challenge:{label:'Dungeon Challenge Arcade',icon:'🎮',fields:[
+    {k:'boss',l:'ชื่อ Boss',t:'text',req:true},
+    {k:'unlock',l:'เงื่อนไขการปลดล็อค',t:'textarea',req:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  equipment:{label:'Equipment',icon:'🛡️',multi:true,addLabel:'+ เพิ่ม Equipment',tableLayout:true,fields:[
+    {k:'name',l:'ชื่อ Equipment',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'unlock',l:'เงื่อนไขการปลดล็อค',t:'textarea',opt:true},
+    {k:'obtain',l:'วิธีการได้รับ',t:'textarea',opt:true},
+    {k:'note',l:'หมายเหตุ',t:'textarea',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  limited_gachapon:{label:'Limited Gachapon In-game',icon:'🎴',multi:true,addLabel:'+ เพิ่ม Gachapon',fields:[
+    {k:'type',l:'ประเภท',t:'select',req:true,opts:['God Fellow','Fellow','Kupole','Leticia'],onChange:'onLimitedTypeChange'},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'rate_date',l:'วันที่ Rate Up',t:'daterange_notime',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true},
+    {k:'leticia_mount',l:'ชื่อสัตว์ขี่ประจำตู้',t:'text',opt:true,showWhen:'Leticia'},
+    {k:'leticia_stat',l:'Stat ของสัตว์ขี่',t:'textarea',opt:true,showWhen:'Leticia'}
+  ]},
+  gachapon_ingame:{label:'Gachapon In-game',icon:'🎲',multi:true,addLabel:'+ เพิ่ม Gachapon',fields:[
+    {k:'type',l:'ประเภท',t:'select',req:true,opts:['God Fellow','Fellow','Kupole','Leticia'],onChange:'onGachaTypeChange'},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'rate_date',l:'วันที่ Rate Up',t:'daterange_notime',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true},
+    {k:'gf_own',l:'เอฟเฟกต์เมื่อครอบครอง',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_carry',l:'เอฟเฟกต์เมื่อพาติดตัว',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_synergy',l:'Fellow Synergy',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_weapon',l:'อาวุธประจำตัว',t:'text',opt:true,showWhen:'God Fellow'},
+    {k:'gf_awaken',l:'สถานะ Awakening',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_image',l:'รูปภาพประกอบ (God Fellow)',t:'image',opt:true,showWhen:'God Fellow'},
+    {k:'leticia_mount',l:'ชื่อสัตว์ขี่ประจำตู้',t:'text',opt:true,showWhen:'Leticia'},
+    {k:'leticia_stat',l:'Stat ของสัตว์ขี่',t:'textarea',opt:true,showWhen:'Leticia'}
+  ]},
+  gacha_web:{label:'New Gacha Web Site',icon:'🌐',multi:true,addLabel:'+ เพิ่ม Gachapon',fields:[
+    {k:'type',l:'ประเภท',t:'select',req:true,opts:['God Fellow','Fellow','Kupole'],onChange:'onGachaTypeChange'},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'rate_date',l:'วันที่ Rate Up',t:'daterange_notime',opt:true},
+    {k:'read_more',l:'อ่านรายละเอียดเพิ่มเติมได้ที่',t:'url',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true},
+    {k:'gf_own',l:'เอฟเฟกต์เมื่อครอบครอง',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_carry',l:'เอฟเฟกต์เมื่อพาติดตัว',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_synergy',l:'Fellow Synergy',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_weapon',l:'อาวุธประจำตัว',t:'text',opt:true,showWhen:'God Fellow'},
+    {k:'gf_awaken',l:'สถานะ Awakening',t:'textarea',opt:true,showWhen:'God Fellow'},
+    {k:'gf_image',l:'รูปภาพประกอบ (God Fellow)',t:'image',opt:true,showWhen:'God Fellow'}
+  ]},
+  arena:{label:'Arena',icon:'⚔️',fields:[
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  battle_pass:{label:'Battle Pass',icon:'🎫',fields:[
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'duration',l:'ระยะเวลา Battle Pass',t:'daterange',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  furniture:{label:'Furniture',icon:'🪑',fields:[
+    {k:'name',l:'ชื่อ Furniture',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  ingame_events:{label:'In-Game Events',icon:'🎉',multi:true,addLabel:'+ เพิ่ม Event',tableLayout:true,fields:[
+    {k:'name',l:'ชื่อ In-Game Events',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'duration',l:'ระยะเวลา',t:'daterange',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  special_event:{label:'Special Event',icon:'🌟',multi:true,addLabel:'+ เพิ่ม Event',tableLayout:true,fields:[
+    {k:'name',l:'ชื่อ Special Event',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'duration',l:'ระยะเวลา',t:'daterange',opt:true},
+    {k:'read_more',l:'อ่านรายละเอียดเพิ่มเติมได้ที่',t:'url',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  fixed_bug:{label:'Fixed System / Bug',icon:'🔧',multi:true,addLabel:'+ เพิ่มรายการ',fields:[
+    {k:'status',l:'สถานะ',t:'status_btn',req:true},
+    {k:'name',l:'ชื่อระบบที่ได้รับการแก้ไข',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'note',l:'หมายเหตุ',t:'textarea',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  dev_note:{label:'Dev. Note',icon:'📝',multi:true,addLabel:'+ เพิ่มรายการ',fields:[
+    {k:'status',l:'สถานะ',t:'status_btn',req:true},
+    {k:'title',l:'ชื่อหัวข้อ',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'note',l:'หมายเหตุ',t:'textarea',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  known_issue:{label:'Know Issue',icon:'⚠️',multi:true,addLabel:'+ เพิ่มรายการ',fields:[
+    {k:'status',l:'สถานะ',t:'status_btn',req:true},
+    {k:'name',l:'ชื่อ Know Issue',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'note',l:'หมายเหตุ',t:'textarea',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]},
+  other:{label:'อื่นๆ',icon:'📌',fields:[
+    {k:'title',l:'ชื่อหัวข้อ',t:'text',req:true},
+    {k:'detail',l:'รายละเอียด',t:'textarea',req:true},
+    {k:'note',l:'หมายเหตุ',t:'textarea',opt:true},
+    {k:'image',l:'รูปภาพประกอบ',t:'image',opt:true}
+  ]}
+};
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let isDemoMode=false, currentUser=null, toastTimer=null;
+let editingSubId=null, editMode=false;
+
+// ═══════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════
+function initStorage(){
+  if(!ls(SK.USERS)){
+    ls(SK.USERS,JSON.stringify([{email:ADMIN_EMAIL.toLowerCase(),role:'admin',name:'Cherikx',addedAt:now()}]));
+  } else {
+    const arr=getUsers();
+    if(!arr.find(u=>u.email===ADMIN_EMAIL.toLowerCase())){
+      arr.unshift({email:ADMIN_EMAIL.toLowerCase(),role:'admin',name:'Cherikx',addedAt:now()});
+      ls(SK.USERS,JSON.stringify(arr));
+    }
+  }
+  if(!ls(SK.LOGS)) ls(SK.LOGS,JSON.stringify([]));
+  if(!ls(SK.SUBS)) ls(SK.SUBS,JSON.stringify([]));
+  if(!ls(SK.HIST)) ls(SK.HIST,JSON.stringify([]));
+}
+function ls(k,v){if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}
+function getUsers(){return JSON.parse(ls(SK.USERS)||'[]')}
+function getLogs(){return JSON.parse(ls(SK.LOGS)||'[]')}
+function getSubs(){return JSON.parse(ls(SK.SUBS)||'[]')}
+function getHist(){return JSON.parse(ls(SK.HIST)||'[]')}
+function now(){return new Date().toISOString()}
+
+// ═══════════════════════════════════════════
+//  AUTH HELPERS
+// ═══════════════════════════════════════════
+function getUserRecord(email){
+  const e=email?.toLowerCase().trim();
+  if(e===ADMIN_EMAIL.toLowerCase()) return {email:e,role:'admin',name:'Cherikx'};
+  return getUsers().find(u=>u.email===e);
+}
+function hasPerm(email,perm){
+  const u=getUserRecord(email);
+  if(!u) return false;
+  return (PERMS[u.role]||[]).includes(perm);
+}
+function isAdmin(email){return hasPerm(email,'manage')}
+function addLog(email,name,status){
+  const logs=getLogs();
+  logs.unshift({id:Date.now(),email:email||'',name:name||'?',timestamp:now(),status,demo:isDemoMode});
+  if(logs.length>1000)logs.length=1000;
+  ls(SK.LOGS,JSON.stringify(logs));
+}
+
+// ═══════════════════════════════════════════
+//  PAGE NAV
+// ═══════════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+}
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='responses') renderResponses();
+  if(id==='history') renderHistory();
+  if(id==='perms') renderPerms();
+  if(id==='logs') renderLogs();
+}
+
+// ═══════════════════════════════════════════
+//  GOOGLE SIGN-IN
+// ═══════════════════════════════════════════
+function handleGoogleCred(resp){
+  try{const d=parseJwt(resp.credential);doLogin(d.email,d.name,d.picture);}
+  catch(e){toast('❌','เกิดข้อผิดพลาด: '+e.message,true);}
+}
+function parseJwt(token){
+  const b64=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+  return JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+}
+function doLogin(email,name,picture){
+  const e=email.toLowerCase().trim();
+  const u=getUserRecord(e);
+  currentUser={email:e,name,picture,role:u?.role||null};
+  ls(SK.USER,JSON.stringify(currentUser));
+  if(u){
+    addLog(e,name,'success');
+    loadMain();showPage('main');
+  } else {
+    addLog(e,name,'denied');
+    document.getElementById('denied-email').textContent=e;
+    showPage('denied');
+  }
+}
+function loadMain(){
+  if(!currentUser)return;
+  document.getElementById('user-name').textContent=currentUser.name||currentUser.email;
+  const av=document.getElementById('user-avatar');
+  if(currentUser.picture&&!isDemoMode) av.innerHTML=`<img src="${currentUser.picture}" alt="">`;
+  else av.textContent=(currentUser.name||currentUser.email)[0].toUpperCase();
+  const role=ROLES[currentUser.role];
+  document.getElementById('admin-badge-wrap').innerHTML=role?`<span class="badge ${role.badge}">${role.label}</span>`:'';
+  // Show admin tabs
+  document.querySelectorAll('.admin-only').forEach(el=>{
+    el.style.display=isAdmin(currentUser.email)?'':'none';
+  });
+  document.getElementById('demo-form-banner').style.display=isDemoMode?'flex':'none';
+  buildSectionMenu();
+  if(currentUser.name){
+    const n=document.getElementById('f-name');
+    if(!n.value) n.value=currentUser.name.split(' ')[0];
+  }
+}
+function signOut(){
+  currentUser=null;isDemoMode=false;
+  ls(SK.USER,'');
+  doClear();
+  switchTab('form',document.querySelector('.tab-btn'));
+  showPage('login');
+  try{google.accounts.id.disableAutoSelect();}catch(e){}
+  setTimeout(initGoogleBtn,300);
+}
+function enterDemoMode(){
+  isDemoMode=true;
+  document.getElementById('demo-banner-login').style.display='flex';
+  document.getElementById('demo-login-btn').style.display='flex';
+  showPage('login');
+}
+function saveClientId(){
+  const val=(document.getElementById('setup-client-id-input').value||'').trim();
+  const errEl=document.getElementById('setup-client-id-err');
+  if(!val.includes('.apps.googleusercontent.com')){errEl.style.display='block';return;}
+  errEl.style.display='none';
+  localStorage.setItem('gp_oauth_client_id',val);
+  location.reload();
+}
+function clearClientId(){
+  localStorage.removeItem('gp_oauth_client_id');
+  location.reload();
+}
+function demoLogin(){
+  const email=document.getElementById('demo-email').value.trim();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('⚠️','กรุณาใส่ Email ให้ถูกต้อง',true);return;}
+  closeModal('demo-modal');
+  doLogin(email,'Demo ('+email.split('@')[0]+')',null);
+}
+
+// ═══════════════════════════════════════════
+//  FORM: BASIC FIELDS
+// ═══════════════════════════════════════════
+function pickCompany(btn,val){
+  document.querySelectorAll('.company-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('f-company').value=val;
+}
+
+// ═══════════════════════════════════════════
+//  SECTION MENU
+// ═══════════════════════════════════════════
+function buildSectionMenu(){
+  const menu=document.getElementById('section-menu');
+  menu.innerHTML=Object.entries(SDEFS).filter(([,d])=>!d.hidden).map(([k,d])=>`
+    <div class="add-menu-item" onclick="addSection('${k}');toggleSectionMenu()">
+      <span class="add-menu-icon">${d.icon}</span>${d.label}
+    </div>`).join('');
+}
+function toggleSectionMenu(){
+  document.getElementById('section-menu').classList.toggle('hidden');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.add-section-wrap')) document.getElementById('section-menu')?.classList.add('hidden');
+});
+
+// ═══════════════════════════════════════════
+//  SECTION INSTANCES
+// ═══════════════════════════════════════════
+let sectionInstances=[];
+
+function addSection(type,data){
+  const id='s_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  const inst={id,type,data:data||{},instances:[{}]};
+  sectionInstances.push(inst);
+  renderSectionBlock(inst);
+}
+
+function renderSectionBlock(inst){
+  const def=SDEFS[inst.type];
+  const el=document.createElement('div');
+  el.className='section-block';el.id='blk_'+inst.id;
+  const hasMergeRows=def.fields&&def.fields.some(f=>f.mergeRow);
+  el.innerHTML=`
+    <div class="section-block-header" onclick="toggleBlock('${inst.id}')">
+      <span class="section-block-icon">${def.icon}</span>
+      <span class="section-block-label">${def.label}</span>
+      <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeSection('${inst.id}')" style="margin-left:auto">🗑 ลบ</button>
+    </div>
+    <div class="section-block-body" id="body_${inst.id}">
+      ${hasMergeRows?`<div id="merge_fields_${inst.id}" style="margin-bottom:14px"></div>`:''}
+      <div id="instances_${inst.id}"></div>
+      ${def.multi?`<button class="btn btn-add btn-sm" onclick="addInstance('${inst.id}')">${def.addLabel}</button>`:''}
+    </div>`;
+  document.getElementById('sections-container').appendChild(el);
+  if(hasMergeRows){
+    const mergeEl=document.getElementById('merge_fields_'+inst.id);
+    let html='';
+    def.fields.filter(f=>f.mergeRow).forEach(f=>{
+      html+=renderField(f,(inst.instances[0]||{})[f.k]||'',inst.id+'_0');
+    });
+    mergeEl.innerHTML=html;
+  }
+  renderInstances(inst);
+}
+
+/* ── Save DOM values back to inst.instances before re-render ── */
+function saveInstancesFromDom(inst){
+  const def=SDEFS[inst.type];
+  inst.instances.forEach((data,idx)=>{
+    const iid=inst.id+'_'+idx;
+    def.fields.forEach(f=>{
+      if(f.t==='header')return;
+      // mergeRow / mergeInCard: only DOM element for instance 0 exists
+      if(f.mergeRow||f.mergeInCard){
+        if(idx===0){
+          const el=document.getElementById('f_'+iid+'_'+f.k);
+          if(el) data[f.k]=el.value;
+        } else {
+          // Copy value from instance 0 so all instances are consistent
+          data[f.k]=inst.instances[0][f.k];
+        }
+        return;
+      }
+      const el=document.getElementById('f_'+iid+'_'+f.k);
+      if(!el)return;
+      if(f.t==='daterange'||f.t==='daterange_notime'){
+        try{data[f.k]=JSON.parse(el.value||'{}');}catch(e){data[f.k]={};}
+      } else {
+        data[f.k]=el.value;
+      }
+    });
+  });
+}
+
+/* ── Routing: choose correct renderer ── */
+function renderInstances(inst){
+  const def=SDEFS[inst.type];
+  if(def.gridLayout==='horizontal') return renderGridInstances(inst);
+  if(def.cardLayout) return renderCardInstances(inst);
+  if(def.tableLayout) return renderTableInstances(inst);
+  renderDefaultInstances(inst);
+}
+
+/* ── Default stacked layout ── */
+function renderDefaultInstances(inst){
+  const def=SDEFS[inst.type];
+  const wrap=document.getElementById('instances_'+inst.id);
+  wrap.innerHTML='';
+  inst.instances.forEach((data,idx)=>{
+    const iid=inst.id+'_'+idx;
+    const div=document.createElement('div');
+    div.className='instance-block';div.id='inst_'+iid;
+    if(def.multi) div.innerHTML=`<div class="instance-num">${def.label} #${idx+1} ${inst.instances.length>1?`<button class="btn btn-danger btn-sm" onclick="removeInstance('${inst.id}',${idx})" style="float:right">✕</button>`:''}</div>`;
+    def.fields.forEach(f=>{
+      if(f.t==='header'){div.innerHTML+=`<div class="section-sub-header">${f.l}</div>`;return;}
+      if(f.mergeRow) return; // Rendered once in merge_fields container above all instances
+      div.innerHTML+=renderField(f,data[f.k],iid);
+    });
+    wrap.appendChild(div);
+    def.fields.filter(f=>f.showWhen).forEach(()=>updateConditional(iid,def,data));
+  });
+}
+
+/* ── Horizontal grid layout — Sub Class ── */
+function renderGridInstances(inst){
+  const def=SDEFS[inst.type];
+  const wrap=document.getElementById('instances_'+inst.id);
+  const n=inst.instances.length;
+  // Exclude header-type and mergeRow fields (mergeRow shown above in merge_fields container)
+  const fields=def.fields.filter(f=>f.t!=='header'&&!f.mergeRow);
+  let html=`<div class="grid-tbl-wrap"><table class="grid-tbl"><thead><tr><th>ฟิลด์</th>`;
+  inst.instances.forEach((_,i)=>{
+    const rmBtn=n>1?`<br><button class="btn btn-danger btn-sm" style="margin-top:5px;font-size:10px" onclick="removeInstance('${inst.id}',${i})">✕ ลบ</button>`:'';
+    html+=`<th>${def.label} #${i+1}${rmBtn}</th>`;
+  });
+  html+=`</tr></thead><tbody>`;
+  fields.forEach(f=>{
+    const req=f.req?'<span class="req">*</span>':'';
+    html+=`<tr><td class="row-hdr">${f.l}${req}</td>`;
+    inst.instances.forEach((data,i)=>{
+      html+=`<td>${renderFieldInline(f,data[f.k],inst.id+'_'+i)}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  wrap.innerHTML=html;
+  inst.instances.forEach((data,i)=>{
+    def.fields.filter(f=>f.showWhen).forEach(()=>updateConditional(inst.id+'_'+i,def,data));
+  });
+}
+
+/* ── Card 2-col layout — New Class (supports mergeInCard + multi) ── */
+function renderCardInstances(inst){
+  const def=SDEFS[inst.type];
+  const wrap=document.getElementById('instances_'+inst.id);
+  if(!inst.instances.length) inst.instances=[{}];
+  const data0=inst.instances[0];
+  const iid0=inst.id+'_0';
+  const hasMerge=def.fields.some(f=>f.mergeInCard);
+  // Left: mergeInCard text fields (always from instance 0)
+  const leftFields=hasMerge
+    ? def.fields.filter(f=>f.mergeInCard&&f.t!=='header')
+    : def.fields.filter(f=>f.t!=='image'&&f.t!=='header');
+  // Right: per-instance image fields (non-merged) and per-instance text fields (non-merged, non-image)
+  const imgFields=def.fields.filter(f=>f.t==='image'&&!f.mergeInCard);
+  const perTextFields=hasMerge
+    ? def.fields.filter(f=>!f.mergeInCard&&f.t!=='image'&&f.t!=='header')
+    : [];
+  let leftHtml='';
+  leftFields.forEach(f=>{
+    const req=f.req?'<span class="req">*</span>':'';
+    const opt=f.opt?'<span class="opt">(Optional)</span>':'';
+    leftHtml+=`<div class="form-group"><label class="f-label">${f.l}${req}${opt}</label>${renderFieldInline(f,data0[f.k],iid0)}</div>`;
+  });
+  let rightHtml='';
+  inst.instances.forEach((data,i)=>{
+    const iid=inst.id+'_'+i;
+    if(inst.instances.length>1){
+      const rmBtn=`<button class="btn btn-danger btn-sm" onclick="removeInstance('${inst.id}',${i})" style="float:right">✕</button>`;
+      rightHtml+=`<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding-bottom:6px;margin-bottom:10px;border-bottom:1px solid var(--border)">${rmBtn}Sub Class #${i+1}</div>`;
+    }
+    perTextFields.forEach(f=>{
+      const req=f.req?'<span class="req">*</span>':'';
+      const opt=f.opt?'<span class="opt">(Optional)</span>':'';
+      rightHtml+=`<div class="form-group"><label class="f-label">${f.l}${req}${opt}</label>${renderFieldInline(f,data[f.k],iid)}</div>`;
+    });
+    if(imgFields.length){
+      imgFields.forEach(f=>{
+        const fid=`f_${iid}_${f.k}`;
+        const req=f.req?'<span class="req">*</span>':'';
+        const opt=f.opt?'<span class="opt">(Optional)</span>':'';
+        rightHtml+=`<div class="form-group"><label class="f-label">${f.l}${req}${opt}</label>${renderImageField(fid,data[f.k])}</div>`;
+      });
+    }
+    if(i<inst.instances.length-1) rightHtml+=`<hr style="border:none;border-top:1px solid var(--border);margin:14px 0">`;
+  });
+  wrap.innerHTML=`<div class="card-grid-2"><div>${leftHtml}</div><div>${rightHtml}</div></div>`;
+}
+
+/* ── Table layout — Equipment / Events ── */
+function renderTableInstances(inst){
+  const def=SDEFS[inst.type];
+  const wrap=document.getElementById('instances_'+inst.id);
+  const fields=def.fields.filter(f=>f.t!=='header');
+  let html=`<div class="sec-tbl-wrap"><table class="sec-tbl"><thead><tr><th style="width:36px">#</th>`;
+  fields.forEach(f=>html+=`<th>${f.l}${f.req?'<span class="req">*</span>':''}</th>`);
+  html+=`<th style="width:44px"></th></tr></thead><tbody>`;
+  inst.instances.forEach((data,idx)=>{
+    const iid=inst.id+'_'+idx;
+    html+=`<tr><td class="n-col">${idx+1}</td>`;
+    fields.forEach(f=>html+=`<td>${renderFieldInline(f,data[f.k],iid)}</td>`);
+    const rmBtn=inst.instances.length>1?`<button class="btn btn-danger btn-sm" onclick="removeInstance('${inst.id}',${idx})">✕</button>`:'';
+    html+=`<td>${rmBtn}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  wrap.innerHTML=html;
+  inst.instances.forEach((data,i)=>{
+    def.fields.filter(f=>f.showWhen).forEach(()=>updateConditional(inst.id+'_'+i,def,data));
+  });
+}
+
+/* ── renderFieldInline: input only, no wrapper div ── */
+function renderFieldInline(f,val,iid){
+  const fid=`f_${iid}_${f.k}`;
+  switch(f.t){
+    case 'text':
+      return `<input type="text" class="f-input" id="${fid}" value="${esc(val||'')}" placeholder="${f.ph||''}">`;
+    case 'textarea':
+      return `<textarea class="f-textarea" id="${fid}" placeholder="${f.ph||''}" style="min-height:60px">${esc(val||'')}</textarea>`;
+    case 'url':
+      return `<input type="url" class="f-input" id="${fid}" value="${esc(val||'')}" placeholder="https://...">`;
+    case 'select':{
+      const opts=f.opts.map(o=>`<option value="${o}"${val===o?' selected':''}>${o}</option>`).join('');
+      const onch=f.onChange?`onchange="${f.onChange}(this,'${iid}')"`:'' ;
+      return `<select class="f-select" id="${fid}" ${onch}>${opts}</select>`;}
+    case 'image':
+      return renderImageField(fid,val);
+    case 'daterange':
+      return renderDateRange(fid,val,true);
+    case 'daterange_notime':
+      return renderDateRange(fid,val,false);
+    case 'status_btn':
+      return renderStatusBtn(fid,val);
+    default: return '';
+  }
+}
+
+function renderField(f,val,iid){
+  const fid=`f_${iid}_${f.k}`;
+  const opt=f.opt?'<span class="opt">(Optional)</span>':'';
+  const req=f.req?'<span class="req">*</span>':'';
+  let input='';
+  switch(f.t){
+    case 'text':
+      input=`<input type="text" class="f-input" id="${fid}" value="${esc(val||'')}" placeholder="${f.ph||''}">`;break;
+    case 'textarea':
+      input=`<textarea class="f-textarea" id="${fid}" placeholder="${f.ph||''}">${esc(val||'')}</textarea>`;break;
+    case 'url':
+      input=`<input type="url" class="f-input" id="${fid}" value="${esc(val||'')}" placeholder="https://...">`;break;
+    case 'select':
+      const opts=f.opts.map(o=>`<option value="${o}"${val===o?' selected':''}>${o}</option>`).join('');
+      const onch=f.onChange?`onchange="${f.onChange}(this,'${iid}')"`:'' ;
+      input=`<select class="f-select" id="${fid}" ${onch}>${opts}</select>`;break;
+    case 'image':
+      input=renderImageField(fid,val);break;
+    case 'daterange':
+      input=renderDateRange(fid,val,true);break;
+    case 'daterange_notime':
+      input=renderDateRange(fid,val,false);break;
+    case 'status_btn':
+      input=renderStatusBtn(fid,val);break;
+    default: input='';
+  }
+  const sw=f.showWhen?`data-show-when="${f.showWhen}" style="display:none"`:'';
+  return `<div class="form-group" id="fg_${iid}_${f.k}" ${sw}>
+    <label class="f-label">${f.l}${req}${opt}</label>${input}</div>`;
+}
+
+function renderImageField(fid,val){
+  const hasImg=val&&val.startsWith('data:');
+  const hasUrl=val&&!val.startsWith('data:');
+  return `<div class="img-upload-wrap">
+    <div class="img-tabs">
+      <button type="button" class="img-tab ${!hasUrl?'active':''}" onclick="imgTabSwitch('${fid}','file',this)">📁 Upload File</button>
+      <button type="button" class="img-tab ${hasUrl?'active':''}" onclick="imgTabSwitch('${fid}','url',this)">🔗 Paste Link</button>
+    </div>
+    <div id="${fid}_file_wrap" style="${hasUrl?'display:none':''}">
+      <input type="file" accept="image/*" style="display:none" id="${fid}_file" onchange="handleImgUpload(this,'${fid}')">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('${fid}_file').click()">📁 เลือกไฟล์ (จะแปลงเป็น WebP)</button>
+    </div>
+    <div id="${fid}_url_wrap" style="${!hasUrl?'display:none':''}">
+      <input type="url" class="f-input" id="${fid}_url" placeholder="https://..." value="${esc(hasUrl?val:'')}" oninput="imgUrlChange('${fid}',this.value)" style="margin-top:6px">
+    </div>
+    <input type="hidden" id="${fid}" value="${esc(val||'')}">
+    <div class="img-preview-wrap" id="${fid}_preview" style="${val?'display:block':''}">
+      <img src="${val||''}" class="img-preview" id="${fid}_img" onerror="this.style.display='none'">
+      <div class="img-size-badge" id="${fid}_size"></div>
+      <button type="button" class="img-clear" onclick="clearImg('${fid}')">✕ ลบรูป</button>
+    </div>
+  </div>`;
+}
+
+function renderDateRange(fid,val,withTime){
+  const v=val||{};
+  return `<div>
+    <div class="daterange-wrap">
+      <div class="daterange-row"><label>เริ่มต้น</label>
+        <input type="date" class="date-input" id="${fid}_sd" value="${v.sd||''}" oninput="updateDatePreview('${fid}')">
+        ${withTime?`<input type="time" class="date-input" id="${fid}_st" value="${v.st||''}" oninput="updateDatePreview('${fid}')" style="margin-top:5px">`:''}
+      </div>
+      <div class="daterange-row"><label>สิ้นสุด</label>
+        <input type="date" class="date-input" id="${fid}_ed" value="${v.ed||''}" oninput="updateDatePreview('${fid}')">
+        ${withTime?`<input type="time" class="date-input" id="${fid}_et" value="${v.et||''}" oninput="updateDatePreview('${fid}')" style="margin-top:5px">`:''}
+      </div>
+    </div>
+    <div class="daterange-preview" id="${fid}_preview">${formatDateRange(v,withTime)}</div>
+    <input type="hidden" id="${fid}" value='${JSON.stringify(v)}'>
+  </div>`;
+}
+
+function updateDatePreview(fid){
+  const sd=val_(fid+'_sd'),st=val_(fid+'_st'),ed=val_(fid+'_ed'),et=val_(fid+'_et');
+  const withTime=!!document.getElementById(fid+'_st');
+  const v={sd,st,ed,et};
+  const h=document.getElementById(fid);if(h)h.value=JSON.stringify(v);
+  const pr=document.getElementById(fid+'_preview');if(pr)pr.textContent=formatDateRange(v,withTime);
+}
+
+function formatDateRange(v,withTime){
+  if(!v||(!v.sd&&!v.ed)) return 'ยังไม่ได้เลือกวันที่';
+  const fmtD=d=>{if(!d)return '?';const[y,m,dd]=d.split('-');return `${dd}/${m}/${y}`};
+  const fmtT=t=>t?`เวลา: ${t} น.`:'';
+  if(withTime) return `เริ่ม: ${fmtD(v.sd)} ${fmtT(v.st)} สิ้นสุด: ${fmtD(v.ed)} ${fmtT(v.et)}`;
+  return `เริ่ม: ${fmtD(v.sd)} สิ้นสุด: ${fmtD(v.ed)}`;
+}
+
+function val_(id){const el=document.getElementById(id);return el?el.value:'';}
+
+function renderStatusBtn(fid,val){
+  const opts=['แก้ไขแล้ว','กำลังปรับปรุง','ปิดระบบ'];
+  const btns=opts.map(o=>`<button type="button" class="status-btn${val===o?' active':''}" data-val="${o}" onclick="pickStatus('${fid}','${o}',this)">${o}</button>`).join('');
+  return `<div class="status-btns">${btns}<input type="hidden" id="${fid}" value="${val||''}"></div>`;
+}
+function pickStatus(fid,val,btn){
+  document.getElementById(fid).value=val;
+  btn.closest('.status-btns').querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+//  IMAGE HANDLERS
+// ═══════════════════════════════════════════
+function imgTabSwitch(fid,tab,btn){
+  btn.parentElement.querySelectorAll('.img-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(fid+'_file_wrap').style.display=tab==='file'?'':'none';
+  document.getElementById(fid+'_url_wrap').style.display=tab==='url'?'':'none';
+}
+function imgUrlChange(fid,url){
+  const h=document.getElementById(fid);if(h)h.value=url;
+  const pw=document.getElementById(fid+'_preview');
+  const pi=document.getElementById(fid+'_img');
+  if(url){pw.style.display='block';if(pi){pi.src=url;pi.style.display='';}}
+  else{pw.style.display='none';}
+}
+function clearImg(fid){
+  const h=document.getElementById(fid);if(h)h.value='';
+  const pw=document.getElementById(fid+'_preview');if(pw)pw.style.display='none';
+  const fu=document.getElementById(fid+'_file');if(fu)fu.value='';
+  const uu=document.getElementById(fid+'_url');if(uu)uu.value='';
+}
+async function handleImgUpload(input,fid){
+  const file=input.files[0];if(!file)return;
+  const btn=input.nextElementSibling;
+  if(btn){btn.textContent='⏳ กำลังแปลง...';}
+  try{
+    const dataUrl=await convertToWebP(file);
+    const h=document.getElementById(fid);if(h)h.value=dataUrl;
+    const pw=document.getElementById(fid+'_preview');if(pw)pw.style.display='block';
+    const pi=document.getElementById(fid+'_img');if(pi){pi.src=dataUrl;pi.style.display='';}
+    const sz=document.getElementById(fid+'_size');
+    if(sz){const kb=Math.round(dataUrl.length*0.75/1024);sz.textContent=`WebP • ${kb} KB`;}
+    if(btn)btn.textContent='📁 เลือกไฟล์ (จะแปลงเป็น WebP)';
+    toast('✅','แปลงเป็น WebP สำเร็จ');
+  }catch(e){toast('❌','แปลงไฟล์ไม่สำเร็จ: '+e.message,true);if(btn)btn.textContent='📁 เลือกไฟล์';}
+}
+async function convertToWebP(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{
+      let w=img.width,h=img.height;
+      if(w>900){h=Math.round(h*900/w);w=900;}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      c.toBlob(blob=>{
+        if(!blob){rej(new Error('Conversion failed'));return;}
+        const r=new FileReader();
+        r.onload=e=>res(e.target.result);
+        r.readAsDataURL(blob);
+      },'image/webp',0.82);
+    };
+    img.onerror=()=>rej(new Error('Load failed'));
+    img.src=url;
+  });
+}
+
+// ═══════════════════════════════════════════
+//  SECTION HELPERS
+// ═══════════════════════════════════════════
+function toggleBlock(id){document.getElementById('body_'+id).classList.toggle('hidden');}
+function removeSection(id){
+  sectionInstances=sectionInstances.filter(s=>s.id!==id);
+  document.getElementById('blk_'+id)?.remove();
+}
+function addInstance(id){
+  const inst=sectionInstances.find(s=>s.id===id);
+  if(inst){saveInstancesFromDom(inst);inst.instances.push({});renderInstances(inst);}
+}
+function removeInstance(id,idx){
+  const inst=sectionInstances.find(s=>s.id===id);
+  if(inst&&inst.instances.length>1){saveInstancesFromDom(inst);inst.instances.splice(idx,1);renderInstances(inst);}
+}
+function onGachaTypeChange(sel,iid){
+  const def=findDefByIid(iid);
+  if(!def)return;
+  updateConditional(iid,def,{type:sel.value});
+}
+function onLimitedTypeChange(sel,iid){
+  // Show/hide Leticia-specific fields based on 'type' dropdown
+  const def=findDefByIid(iid);
+  if(!def)return;
+  const val=sel.value;
+  def.fields.filter(f=>f.showWhen).forEach(f=>{
+    const fg=document.getElementById('fg_'+iid+'_'+f.k);
+    if(fg) fg.style.display=(val===f.showWhen)?'':'none';
+  });
+}
+function findDefByIid(iid){
+  // iid = sId_idx, sId = s_timestamp_rand
+  const inst=sectionInstances.find(s=>iid.startsWith(s.id));
+  return inst?SDEFS[inst.type]:null;
+}
+function updateConditional(iid,def,data){
+  const selId='f_'+iid+'_type';
+  const selEl=document.getElementById(selId);
+  const curVal=selEl?selEl.value:(data&&data.type)||'';
+  def.fields.filter(f=>f.showWhen).forEach(f=>{
+    const fg=document.getElementById('fg_'+iid+'_'+f.k);
+    if(fg) fg.style.display=(curVal===f.showWhen)?'':'none';
+  });
+}
+
+// ═══════════════════════════════════════════
+//  ITEM TABLE BUILDER
+// ═══════════════════════════════════════════
+let tableInstances=[];
+function addItemTable(){
+  const id='t_'+Date.now();
+  tableInstances.push({id,rows:[{img:'',name:'',qty:'',exchange:''}]});
+  renderTable(id);
+}
+function renderTable(id){
+  const tbl=tableInstances.find(t=>t.id===id);if(!tbl)return;
+  const existing=document.getElementById('tbl_'+id);
+  const el=existing||document.createElement('div');
+  el.id='tbl_'+id;el.className='form-card';
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span style="font-weight:700;font-size:14px">🎁 ตารางไอเทม</span>
+      <button class="btn btn-danger btn-sm" onclick="removeTable('${id}')">🗑 ลบตาราง</button>
+    </div>
+    <div style="overflow-x:auto">
+    <table class="item-table">
+      <thead><tr><th>รูปภาพ</th><th>ชื่อไอเทม</th><th>จำนวน</th><th>แลกเปลี่ยน</th><th></th></tr></thead>
+      <tbody id="tbl_body_${id}">
+        ${tbl.rows.map((r,i)=>`<tr>
+          <td><input class="item-input" placeholder="URL รูป" value="${esc(r.img)}" oninput="tblUpdate('${id}',${i},'img',this.value)" style="width:120px"></td>
+          <td><input class="item-input" placeholder="ชื่อไอเทม" value="${esc(r.name)}" oninput="tblUpdate('${id}',${i},'name',this.value)"></td>
+          <td><input class="item-input" placeholder="จำนวน" value="${esc(r.qty)}" oninput="tblUpdate('${id}',${i},'qty',this.value)" style="width:80px"></td>
+          <td><select class="item-input" onchange="tblUpdate('${id}',${i},'exchange',this.value)" style="cursor:pointer"><option value="">—</option><option value="✅"${r.exchange==='✅'?' selected':''}>✅</option><option value="❌"${r.exchange==='❌'?' selected':''}>❌</option></select></td>
+          <td><button class="btn btn-danger btn-sm" onclick="tblRemoveRow('${id}',${i})">✕</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+    <button class="btn btn-add btn-sm" onclick="tblAddRow('${id}')" style="margin-top:10px">+ เพิ่มแถว</button>`;
+  if(!existing) document.getElementById('tables-container').appendChild(el);
+}
+function tblUpdate(id,idx,key,val){const t=tableInstances.find(t=>t.id===id);if(t&&t.rows[idx])t.rows[idx][key]=val;}
+function tblAddRow(id){const t=tableInstances.find(t=>t.id===id);if(t){t.rows.push({img:'',name:'',qty:'',exchange:''});renderTable(id);}}
+function tblRemoveRow(id,idx){const t=tableInstances.find(t=>t.id===id);if(t&&t.rows.length>1){t.rows.splice(idx,1);renderTable(id);}}
+function removeTable(id){tableInstances=tableInstances.filter(t=>t.id!==id);document.getElementById('tbl_'+id)?.remove();}
+
+// ═══════════════════════════════════════════
+//  COLLECT FORM DATA
+// ═══════════════════════════════════════════
+function collectSections(){
+  return sectionInstances.map(inst=>{
+    const def=SDEFS[inst.type];
+    const instances=inst.instances.map((_,idx)=>{
+      const iid=inst.id+'_'+idx;
+      const data={};
+      def.fields.forEach(f=>{
+        if(f.t==='header')return;
+        // mergeRow/mergeInCard: always read from instance 0 DOM element
+        if(f.mergeRow||f.mergeInCard){
+          const el=document.getElementById('f_'+inst.id+'_0_'+f.k);
+          if(el){
+            if(f.t==='daterange'||f.t==='daterange_notime'){try{data[f.k]=JSON.parse(el.value||'{}');}catch{data[f.k]={};}}
+            else{data[f.k]=el.value;}
+          }
+          return;
+        }
+        const el=document.getElementById('f_'+iid+'_'+f.k);
+        if(!el)return;
+        if(f.t==='daterange'||f.t==='daterange_notime'){
+          try{data[f.k]=JSON.parse(el.value||'{}');}catch{data[f.k]={};}
+        } else {
+          data[f.k]=el.value;
+        }
+      });
+      return data;
+    });
+    return {type:inst.type,label:def.label,icon:def.icon,instances};
+  });
+}
+
+// ═══════════════════════════════════════════
+//  SUBMIT
+// ═══════════════════════════════════════════
+function confirmSubmit(){
+  const name=document.getElementById('f-name').value.trim();
+  const company=document.getElementById('f-company').value;
+  const date=document.getElementById('f-date').value;
+  if(!name){toast('⚠️','กรุณาใส่ชื่อของคุณ',true);return;}
+  if(!company){toast('⚠️','กรุณาเลือกบริษัท',true);return;}
+  if(!date){toast('⚠️','กรุณาเลือกวันที่ Patch Note',true);return;}
+  if(editMode){doSaveEdit();return;}
+  showModal('modal-confirm-submit');
+}
+function doSubmit(){
+  closeModal('modal-confirm-submit');
+  const name=document.getElementById('f-name').value.trim();
+  const company=document.getElementById('f-company').value;
+  const date=document.getElementById('f-date').value;
+  const sections=collectSections();
+  const tables=tableInstances.map(t=>({id:t.id,rows:[...t.rows]}));
+  const sub={
+    id:'sub_'+Date.now(),
+    submittedBy:{email:currentUser.email,name:currentUser.name},
+    gpName:'GP: '+name,company,patchDate:date,
+    sections,tables,
+    timestamp:now(),editHistory:[]
+  };
+  const subs=getSubs();subs.unshift(sub);
+  ls(SK.SUBS,JSON.stringify(subs));
+  // Log creation in history
+  const hist=getHist();
+  hist.unshift({action:'submit',subId:sub.id,patchDate:date,editedBy:{email:currentUser.email,name:currentUser.name},editedAt:now(),changes:'ส่งข้อมูลใหม่: GP: '+name});
+  ls(SK.HIST,JSON.stringify(hist));
+  toast('✅','ส่งข้อมูลสำเร็จ! บันทึกใน My Responses แล้ว');
+}
+
+function deleteSubmission(subId){
+  if(!confirm('ต้องการลบข้อมูลนี้? ไม่สามารถกู้คืนได้'))return;
+  const sub=getSubs().find(s=>s.id===subId);if(!sub)return;
+  const hist=getHist();
+  hist.unshift({action:'delete',subId,patchDate:sub.patchDate,editedBy:{email:currentUser.email,name:currentUser.name},editedAt:now(),changes:'ลบ Patch Note: '+sub.gpName});
+  ls(SK.HIST,JSON.stringify(hist));
+  ls(SK.SUBS,JSON.stringify(getSubs().filter(s=>s.id!==subId)));
+  renderResponses();
+  toast('🗑','ลบข้อมูลแล้ว');
+}
+function confirmClear(){showModal('modal-confirm-clear');}
+function doClear(silent){
+  if(!silent) closeModal('modal-confirm-clear');
+  editMode=false;editingSubId=null;
+  const banner=document.getElementById('edit-mode-banner');if(banner)banner.classList.remove('show');
+  const sBtn=document.getElementById('submit-btn');if(sBtn)sBtn.textContent='✉️ ส่งข้อมูล';
+  const cBtn=document.getElementById('cancel-edit-btn');if(cBtn)cBtn.style.display='none';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-date').value='';
+  document.getElementById('f-company').value='';
+  document.querySelectorAll('.company-btn').forEach(b=>b.classList.remove('selected'));
+  sectionInstances=[];document.getElementById('sections-container').innerHTML='';
+  tableInstances=[];document.getElementById('tables-container').innerHTML='';
+  if(!silent) toast('🔄','ล้างข้อมูลแล้ว');
+}
+
+// ═══════════════════════════════════════════
+//  VIEW RESPONSES
+// ═══════════════════════════════════════════
+function renderResponses(){
+  const subs=getSubs();
+  const viewAll=hasPerm(currentUser?.email,'view_all');
+  const myEmail=currentUser?.email;
+  const filtered=viewAll?subs:subs.filter(s=>s.submittedBy?.email===myEmail);
+  const el=document.getElementById('responses-list');
+  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">📭</div>ยังไม่มีข้อมูล</div>`;return;}
+  el.innerHTML=filtered.map(s=>{
+    const dt=new Date(s.timestamp);
+    const dtStr=dt.toLocaleDateString('th-TH')+' '+dt.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+    const pdate=s.patchDate?s.patchDate.split('-').reverse().join('/'):'?';
+    return `<div class="resp-card">
+      <div class="resp-card-header">
+        <div class="resp-card-info">
+          <div class="resp-date">📅 Patch Note: ${pdate}</div>
+          <div class="resp-meta">กรอกโดย: ${s.gpName} | ${s.company} | ส่งเมื่อ: ${dtStr}</div>
+          ${s.editHistory?.length?`<div style="font-size:11px;color:var(--yellow);margin-top:3px">✏️ แก้ไขแล้ว ${s.editHistory.length} ครั้ง</div>`:''}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="toggleResp('${s.id}')">👁 ดูรายละเอียด</button>
+          <button class="btn btn-add btn-sm" onclick="openEdit('${s.id}')">✏️ Edit</button>
+          <button class="btn btn-success btn-sm" onclick="sendToDocs('${s.id}')">📤 Google Docs</button>
+          <button class="btn btn-astek btn-sm" onclick="exportAstek('${s.id}')">🖥 Export Astek</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSubmission('${s.id}')">🗑 ลบ</button>
+        </div>
+      </div>
+      <div class="resp-body" id="resp_${s.id}">
+        ${(s.sections||[]).map(sec=>`
+          <div class="resp-section-item">
+            <div class="resp-section-title">${sec.icon} ${sec.label}</div>
+            ${(sec.instances||[]).map(inst=>Object.entries(inst).map(([k,v])=>{
+              if(!v||v==='{}'||k.startsWith('_'))return'';
+              let disp=typeof v==='object'?formatDateRange(v,true):String(v);
+              if(disp.startsWith('data:'))disp='[รูปภาพ]';
+              if(!disp.trim())return'';
+              return`<div class="resp-field"><strong>${k}:</strong>${disp}</div>`;
+            }).join('')).join('')}
+          </div>`).join('')}
+        ${(s.tables||[]).length?`<div class="resp-section-item"><div class="resp-section-title">🎁 ตารางไอเทม</div>${s.tables.map(t=>t.rows.map(r=>`<div class="resp-field">${r.name} | จำนวน:${r.qty} | แลกเปลี่ยน:${r.exchange}</div>`).join('')).join('')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleResp(id){document.getElementById('resp_'+id)?.classList.toggle('open');}
+
+// ═══════════════════════════════════════════
+//  EDIT SYSTEM
+// ═══════════════════════════════════════════
+function openEdit(subId){
+  const sub=getSubs().find(s=>s.id===subId);if(!sub)return;
+  // Clear form silently
+  doClear(true);
+  editMode=true;editingSubId=subId;
+  // Load basic fields
+  document.getElementById('f-name').value=sub.gpName?.replace('GP: ','')||'';
+  document.getElementById('f-date').value=sub.patchDate||'';
+  const comp=sub.company||'';
+  document.getElementById('f-company').value=comp;
+  document.querySelectorAll('.company-btn').forEach(b=>{
+    b.classList.toggle('selected',b.textContent.includes(comp));
+  });
+  // Rebuild sections
+  sectionInstances=[];document.getElementById('sections-container').innerHTML='';
+  (sub.sections||[]).forEach(sec=>{
+    const type=sec.type||Object.keys(SDEFS).find(k=>SDEFS[k].label===sec.label);
+    if(!type||!SDEFS[type])return;
+    const id='s_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    const inst={id,type,data:{},instances:(sec.instances&&sec.instances.length?sec.instances:[{}])};
+    sectionInstances.push(inst);
+    renderSectionBlock(inst);
+  });
+  // Rebuild tables
+  tableInstances=[];document.getElementById('tables-container').innerHTML='';
+  (sub.tables||[]).forEach(t=>{
+    const tid='t_'+Date.now()+'_'+Math.random().toString(36).slice(2,5);
+    tableInstances.push({id:tid,rows:[...(t.rows||[])]});
+    renderTable(tid);
+  });
+  // Show edit banner
+  const pdate=sub.patchDate?sub.patchDate.split('-').reverse().join('/'):'?';
+  const banner=document.getElementById('edit-mode-banner');
+  if(banner){
+    banner.querySelector('.edit-banner-txt').innerHTML=`<strong>โหมดแก้ไข</strong> — กำลังแก้ไข Patch Note: ${pdate} (${sub.gpName})`;
+    banner.classList.add('show');
+  }
+  const sBtn=document.getElementById('submit-btn');if(sBtn)sBtn.textContent='💾 บันทึกการแก้ไข';
+  const cBtn=document.getElementById('cancel-edit-btn');if(cBtn)cBtn.style.display='';
+  // Switch to form tab
+  switchTab('form',document.querySelector('.tab-btn'));
+  toast('✏️','โหมดแก้ไข — โหลดข้อมูลแล้ว');
+}
+
+function cancelEdit(){
+  doClear(true);
+  switchTab('responses',document.querySelectorAll('.tab-btn')[1]);
+  toast('ℹ️','ยกเลิกการแก้ไขแล้ว');
+}
+
+function doSaveEdit(){
+  const sub=getSubs().find(s=>s.id===editingSubId);if(!sub)return;
+  const newName=document.getElementById('f-name').value.trim();
+  const newDate=document.getElementById('f-date').value;
+  const newComp=document.getElementById('f-company').value;
+  const newSections=collectSections();
+  const newTables=tableInstances.map(t=>({id:t.id,rows:[...t.rows]}));
+  const changeDesc=[];
+  if(newName&&'GP: '+newName!==sub.gpName) changeDesc.push(`ชื่อ: ${sub.gpName}→GP: ${newName}`);
+  if(newDate&&newDate!==sub.patchDate) changeDesc.push(`วันที่: ${sub.patchDate}→${newDate}`);
+  if(newComp&&newComp!==sub.company) changeDesc.push(`บริษัท: ${sub.company}→${newComp}`);
+  if(newSections.length) changeDesc.push('แก้ไขเนื้อหา');
+  if(newName)sub.gpName='GP: '+newName;
+  if(newDate)sub.patchDate=newDate;
+  if(newComp)sub.company=newComp;
+  sub.sections=newSections;sub.tables=newTables;
+  sub.editHistory=sub.editHistory||[];
+  sub.editHistory.push({editedBy:{email:currentUser.email,name:currentUser.name},editedAt:now(),changes:changeDesc.join(', ')||'แก้ไขข้อมูล'});
+  const hist=getHist();
+  hist.unshift({action:'edit',subId:editingSubId,patchDate:sub.patchDate,editedBy:{email:currentUser.email,name:currentUser.name},editedAt:now(),changes:changeDesc.join(', ')||'แก้ไขข้อมูล'});
+  ls(SK.HIST,JSON.stringify(hist));
+  const subs=getSubs().map(s=>s.id===editingSubId?sub:s);
+  ls(SK.SUBS,JSON.stringify(subs));
+  doClear(true);
+  switchTab('responses',document.querySelectorAll('.tab-btn')[1]);
+  toast('✅','บันทึกการแก้ไขสำเร็จ');
+}
+
+// ═══════════════════════════════════════════
+//  EDIT HISTORY
+// ═══════════════════════════════════════════
+function renderHistory(){
+  const hist=getHist();
+  renderHistList('hist-all-list', hist, true);
+  renderHistList('hist-submit-list', hist.filter(h=>h.action==='submit'));
+  renderHistList('hist-edit-list', hist.filter(h=>!h.action||h.action==='edit'));
+  renderHistList('hist-delete-list', hist.filter(h=>h.action==='delete'));
+}
+
+function renderHistList(elId, hist, colored=false){
+  const el=document.getElementById(elId);if(!el)return;
+  if(!hist.length){
+    el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">📜</div>ยังไม่มีข้อมูล</div>`;return;
+  }
+  el.innerHTML=hist.map(h=>{
+    let icon='✏️',verb='แก้ไข',colorClass='';
+    if(h.action==='submit'){icon='📝';verb='ส่งข้อมูลใหม่';if(colored)colorClass='h-submit';}
+    else if(h.action==='delete'){icon='🗑';verb='ลบข้อมูล';if(colored)colorClass='h-delete';}
+    else{icon='✏️';verb='แก้ไข';if(colored)colorClass='h-edit';}
+    const dt=new Date(h.editedAt||h.timestamp);
+    const dtStr=dt.toLocaleDateString('th-TH')+' เวลา: '+dt.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
+    const pd=h.patchDate?h.patchDate.split('-').reverse().join('/'):'?';
+    const who=h.editedBy?.name||h.editedBy?.email||'?';
+    return `<div class="hist-item ${colorClass}">
+      <div class="hist-who">${icon} ${who} — ${verb} Patch Note: ${pd}</div>
+      <div class="hist-when">วันที่: ${dtStr}</div>
+      ${h.changes?`<div class="hist-detail">รายละเอียด: ${h.changes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function switchHistTab(tab,btn){
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.stab-pane').forEach(p=>p.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('hist-pane-'+tab)?.classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+//  PERMISSIONS ADMIN
+// ═══════════════════════════════════════════
+function addUser(){
+  const email=document.getElementById('new-email').value.trim().toLowerCase();
+  const role=document.getElementById('new-role').value;
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('⚠️','Email ไม่ถูกต้อง',true);return;}
+  const arr=getUsers();
+  const existing=arr.findIndex(u=>u.email===email);
+  if(existing>=0){arr[existing].role=role;toast('✅','อัปเดต Role สำเร็จ');}
+  else{arr.push({email,role,name:'',addedAt:now()});toast('✅','เพิ่ม '+email+' สำเร็จ');}
+  ls(SK.USERS,JSON.stringify(arr));
+  document.getElementById('new-email').value='';
+  renderPerms();
+}
+function removeUser(email){
+  if(email===ADMIN_EMAIL.toLowerCase()){toast('⚠️','ไม่สามารถลบ Admin ได้',true);return;}
+  if(!confirm('ต้องการลบ '+email+' ?'))return;
+  ls(SK.USERS,JSON.stringify(getUsers().filter(u=>u.email!==email)));
+  renderPerms();toast('🗑','ลบ '+email+' แล้ว');
+}
+function changeRole(email,role){
+  const arr=getUsers().map(u=>u.email===email?{...u,role}:u);
+  ls(SK.USERS,JSON.stringify(arr));renderPerms();toast('✅','เปลี่ยน Role สำเร็จ');
+}
+function renderPerms(){
+  const arr=getUsers();
+  document.getElementById('email-count').textContent=arr.length;
+  const el=document.getElementById('email-list');
+  el.innerHTML=arr.map(u=>{
+    const r=ROLES[u.role]||ROLES.editor;
+    const isOwner=u.email===ADMIN_EMAIL.toLowerCase();
+    return `<div class="email-item">
+      <div class="email-item-l">
+        <div class="dot" style="background:${r.color}"></div>
+        <span style="font-size:13px">${u.email}</span>
+        ${isOwner?`<span class="badge badge-admin">⚡ Owner</span>`:`
+          <select onchange="changeRole('${u.email}',this.value)" style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;padding:3px 8px;cursor:pointer">
+            ${Object.entries(ROLES).map(([k,v])=>`<option value="${k}"${u.role===k?' selected':''}>${v.label}</option>`).join('')}
+          </select>`}
+      </div>
+      ${isOwner?'':`<button class="btn btn-danger btn-sm" onclick="removeUser('${u.email}')">ลบ</button>`}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+//  LOGS
+// ═══════════════════════════════════════════
+function renderLogs(){
+  const logs=getLogs();
+  document.getElementById('s-total').textContent=logs.length;
+  document.getElementById('s-ok').textContent=logs.filter(l=>l.status==='success').length;
+  document.getElementById('s-no').textContent=logs.filter(l=>l.status==='denied').length;
+  const tbody=document.getElementById('log-body');
+  if(!logs.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">ยังไม่มีข้อมูล</td></tr>';return;}
+  tbody.innerHTML=logs.map((l,i)=>{
+    const dt=new Date(l.timestamp);
+    const dts=dt.toLocaleDateString('th-TH')+' '+dt.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+    return `<tr><td style="color:var(--text3)">${i+1}</td><td>${l.name}${l.demo?' <span style="color:var(--yellow);font-size:10px">[Demo]</span>':''}</td><td style="font-family:Consolas,font-size:12px">${l.email}</td><td style="font-size:12px">${dts}</td><td><span class="sbadge ${l.status==='success'?'s-ok':'s-no'}">${l.status==='success'?'✅ สำเร็จ':'🚫 ปฏิเสธ'}</span></td></tr>`;
+  }).join('');
+}
+function confirmClearLogs(){showModal('modal-confirm-clear-logs');}
+function doClearLogs(){closeModal('modal-confirm-clear-logs');ls(SK.LOGS,JSON.stringify([]));renderLogs();toast('🗑','ล้าง Log แล้ว');}
+function exportLogs(){
+  const logs=getLogs();if(!logs.length){toast('⚠️','ไม่มีข้อมูล',true);return;}
+  const csv='No,Name,Email,Timestamp,Status\n'+logs.map((l,i)=>`${i+1},"${l.name}","${l.email}","${l.timestamp}","${l.status}"`).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='login-log-'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+  toast('✅','Export สำเร็จ');
+}
+
+// ═══════════════════════════════════════════
+//  GOOGLE DOCS
+// ═══════════════════════════════════════════
+function sendToDocs(subId){
+  const sub=getSubs().find(s=>s.id===subId)||buildCurrentFormSub();
+  if(!sub)return;
+  const text=formatSubForDocs(sub);
+  document.getElementById('gdocs-preview').value=text;
+  showModal('modal-gdocs');
+}
+function formatSubForDocs(sub){
+  const pdate=sub.patchDate?sub.patchDate.split('-').reverse().join('/'):'?';
+  let txt=`[ID:${sub.id}]\n`;
+  txt+=`════════════════════════════════\n`;
+  txt+=`Patch Note ประจำวันที่: ${pdate}\n`;
+  txt+=`กรอกโดย: ${sub.gpName} | บริษัท: ${sub.company}\n`;
+  txt+=`ส่งเมื่อ: ${new Date(sub.timestamp).toLocaleString('th-TH')}\n`;
+  txt+=`════════════════════════════════\n\n`;
+  (sub.sections||[]).forEach(sec=>{
+    txt+=`${sec.icon} ${sec.label}\n${'─'.repeat(40)}\n`;
+    (sec.instances||[]).forEach((inst,i)=>{
+      if(sec.instances.length>1)txt+=`[${i+1}]\n`;
+      Object.entries(inst).forEach(([k,v])=>{
+        if(!v||k.startsWith('_'))return;
+        let disp=typeof v==='object'?formatDateRange(v,true):String(v);
+        if(disp.startsWith('data:'))disp='[รูปภาพแนบ]';
+        if(disp.trim())txt+=`• ${k}: ${disp}\n`;
+      });
+    });
+    txt+='\n';
+  });
+  if(sub.tables?.length){
+    txt+=`🎁 ตารางไอเทม\n${'─'.repeat(40)}\n`;
+    sub.tables.forEach(t=>t.rows.forEach(r=>txt+=`${r.name} | จำนวน: ${r.qty} | แลกเปลี่ยน: ${r.exchange}\n`));
+    txt+='\n';
+  }
+  if(sub.editHistory?.length){
+    txt+=`📜 Edit History\n${'─'.repeat(40)}\n`;
+    sub.editHistory.forEach(h=>{
+      txt+=`• ${h.editedBy?.name} แก้ไขเมื่อ ${new Date(h.editedAt).toLocaleString('th-TH')}: ${h.changes}\n`;
+    });
+  }
+  return txt;
+}
+function copyAndOpenDocs(){
+  const txt=document.getElementById('gdocs-preview').value;
+  navigator.clipboard.writeText(txt).then(()=>toast('✅','คัดลอกแล้ว! กรุณาวางใน Google Docs')).catch(()=>toast('⚠️','กรุณาคัดลอกด้วยตนเอง',true));
+  window.open(GDOCS_URL,'_blank');
+  closeModal('modal-gdocs');
+}
+// ═══════════════════════════════════════════
+//  EXPORT FOR ASTEK (TOSM Forum HTML)
+// ═══════════════════════════════════════════
+function exportAstek(subId){
+  const sub=getSubs().find(s=>s.id===subId);if(!sub)return;
+  const html=buildAstekHTML(sub);
+  navigator.clipboard.writeText(html)
+    .then(()=>toast('✅','คัดลอก HTML แล้ว! เปิด Astek → Tools → Source code → วาง → Save'))
+    .catch(()=>toast('⚠️','ไม่สามารถคัดลอกอัตโนมัติ กรุณาลองใหม่',true));
+}
+
+function buildAstekHTML(sub){
+  const pdate=sub.patchDate?sub.patchDate.split('-').reverse().join('/'):'?';
+  const dtStr=new Date(sub.timestamp).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+  const sections=sub.sections||[];
+
+  // ── Hero ──
+  const hero=`<div style="background:#1E3A28;border-radius:14px;padding:28px 26px 22px;margin-bottom:10px;border:1px solid #2D5E3E">
+<div style="margin-bottom:12px"><span style="background:#C9973A;color:#2A1400;font-size:10px;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.8px">PATCH NOTE</span><span style="font-size:11px;color:#A8D4B4;margin-left:8px">GP:BLUE</span></div>
+<h1 style="font-size:20px;font-weight:700;color:#F2ECC8;margin:0 0 6px;line-height:1.35;font-family:'Segoe UI','Noto Sans Thai',sans-serif">Patch Note: ${pdate}</h1>
+<p style="font-size:13px;color:#C4E0CB;margin:0 0 16px">Tales of Souls Master &middot; เซิร์ฟเวอร์ไทย &middot; รวบรวมโดย ${esc(sub.gpName)}</p>
+<div style="display:flex;flex-wrap:wrap;gap:18px;padding-top:12px;border-top:1px solid rgba(201,151,58,.22)">
+<span style="font-size:13px;color:#A8D4B4">&bull; วันที่อัปเดต <strong style="color:#F2ECC8">${dtStr}</strong></span>
+<span style="font-size:13px;color:#A8D4B4">&bull; หมวดหมู่ <strong style="color:#F2ECC8">${sections.map(s=>esc(s.label)).join(', ')}</strong></span>
+</div></div>`;
+
+  // ── TOC ──
+  const tocLinks=sections.map((sec,i)=>`<a href="#ts${i}" style="font-size:14px;color:#2D5E3E;padding:5px 10px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border-radius:6px;border:1px solid rgba(45,94,62,.2)">${sec.icon} ${esc(sec.label)}</a>`).join('');
+  const toc=`<div style="background:#F5F0E4;border:1px solid #C9B882;border-radius:12px;padding:14px 18px;margin-bottom:20px;text-align:center">
+<h3 style="font-size:14px;font-weight:700;color:#6B4E1A;margin:0 0 12px;font-family:'Segoe UI','Noto Sans Thai',sans-serif">&#128203; สารบัญ</h3>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px">${tocLinks}</div></div>`;
+
+  // ── Sections ──
+  const secHtml=sections.map((sec,i)=>buildAstekSec(sec,i)).join('');
+
+  // ── Footer ──
+  const footer=`<div style="text-align:center;padding:18px 12px;border-top:2px solid #C9B882;margin-top:10px;background:#F5F0E4;border-radius:0 0 12px 12px;font-size:13px;color:#3A2800;line-height:2.2;font-family:'Segoe UI','Noto Sans Thai',sans-serif">
+&#128240; ไม่พลาดทุกข่าวสาร เชื่อมต่อกับผู้กอบกู้ท่านอื่นๆได้ที่ &#128044;<br>
+&#9642; Website: <a href="http://exe.in.th/tosm_main" style="color:#2D5E3E;font-weight:700">คลิก</a> &nbsp;|&nbsp; &#9642; Facebook Official Page: <a href="http://exe.in.th/tosm_like_fanpage" style="color:#2D5E3E;font-weight:700">คลิก</a> &nbsp;|&nbsp; &#9642; Facebook Group: <a href="http://exe.in.th/tosm_join_group" style="color:#2D5E3E;font-weight:700">คลิก</a><br>
+&#9642; Discord Official: <a href="https://exe.in.th/TOSM_Discord" style="color:#2D5E3E;font-weight:700">เข้าร่วม</a> &nbsp;|&nbsp; &#9642; LINE OA Official: <a href="http://exe.in.th/tosm_line" style="color:#2D5E3E;font-weight:700">คลิก</a>
+</div>`;
+
+  return `<div style="max-width:700px;margin:0 auto;font-family:'Segoe UI','Noto Sans Thai',sans-serif;color:#1E2B1A">${hero}${toc}${secHtml}${footer}</div>`;
+}
+
+function buildAstekSec(sec,idx){
+  const def=SDEFS[sec.type]||{fields:[]};
+  // Anchor spacer 2 lines above header so scroll lands correctly
+  const anchor=`<div id="ts${idx}" style="display:block;height:0;padding-top:48px;margin-top:-48px"></div>`;
+  // Centered H3 label, no arrow tail
+  const header=`<div style="text-align:center;margin-bottom:16px">
+<h3 style="display:inline-block;background:#000000;color:#F1C40F;font-size:18px;font-weight:700;padding:10px 32px;border-radius:10px;margin:0;font-family:'Segoe UI','Noto Sans Thai',sans-serif">${sec.icon} ${esc(sec.label)}</h3>
+</div>`;
+  let body='';
+  if(def.gridLayout==='horizontal') body=buildAstekSubClass(sec);
+  else if(def.cardLayout)           body=buildAstekNewClass(sec);
+  else if(def.tableLayout)          body=buildAstekTable(sec,def);
+  else                               body=buildAstekCards(sec,def);
+  return `<div style="margin-bottom:28px">${anchor}${header}${body}</div>`;
+}
+
+function buildAstekSubClass(sec){
+  const instances=sec.instances||[];if(!instances.length)return'';
+  const order=instances[0]?.order||'';
+  let html='';
+  if(order) html+=`<div style="background:#FAFAF6;border:1px solid #DDD5B4;border-radius:8px;padding:11px 16px;margin-bottom:10px;font-size:14px"><span style="color:#7A6940;min-width:110px;display:inline-block">ลำดับ Class</span><strong style="color:#1E2B1A">${esc(order)}</strong></div>`;
+  const cards=instances.map(inst=>{
+    const iconHtml=inst.icon&&inst.icon.startsWith('data:')?`<img src="${inst.icon}" style="width:52px;height:52px;object-fit:contain;border-radius:6px;display:block;margin:0 auto 8px">`:`<div style="width:52px;height:52px;background:#EDE8D4;border-radius:6px;border:1px solid #C9B882;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6B4E1A">Icon</div>`;
+    return `<div style="background:#FAFAF6;border:1px solid #DDD5B4;border-radius:10px;padding:12px 8px;text-align:center">${iconHtml}<div style="font-size:14px;font-weight:700;color:#1E3A28;margin-bottom:2px">${esc(inst.main_class||'')}</div><div style="font-size:12px;color:#7A6940">${esc(inst.name||'')}</div></div>`;
+  }).join('');
+  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px">${cards}</div>`;
+  return html;
+}
+
+function buildAstekNewClass(sec){
+  const instances=sec.instances||[];if(!instances.length)return'';
+  const className=instances[0]?.class_name||'';
+  let html=`<div style="background:#FAFAF6;border:1px solid #DDD5B4;border-radius:10px;padding:13px 16px;margin-bottom:10px">
+<div style="font-size:12px;font-weight:700;color:#6B4E1A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #E8E0C8">ชื่อ Class</div>
+<div style="font-size:15px;font-weight:700;color:#1E2B1A">${esc(className)}</div></div>`;
+  const cards=instances.map(inst=>{
+    const iconHtml=inst.sub_icon&&inst.sub_icon.startsWith('data:')?`<img src="${inst.sub_icon}" style="width:52px;height:52px;object-fit:contain;border-radius:6px;display:block;margin:0 auto 6px">`:'';
+    const charHtml=inst.char_image&&inst.char_image.startsWith('data:')?`<img src="${inst.char_image}" style="width:100%;max-width:110px;border-radius:8px;display:block;margin:6px auto 0">`:'';
+    return `<div style="background:#FAFAF6;border:1px solid #DDD5B4;border-radius:10px;padding:12px 10px;text-align:center">${iconHtml}<div style="font-size:14px;font-weight:700;color:#1E3A28;margin-bottom:4px">${esc(inst.sub_name||'')}</div>${charHtml}</div>`;
+  }).join('');
+  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px">${cards}</div>`;
+  return html;
+}
+
+function buildAstekTable(sec,def){
+  const instances=sec.instances||[];if(!instances.length)return'';
+  const fields=def.fields.filter(f=>f.t!=='header');
+  const ths=fields.map(f=>`<th style="background:#2D5E3E;color:#F2ECC8;font-size:14px;font-weight:700;padding:9px 10px;text-align:left;word-break:break-word;border-bottom:1px solid #3A7050">${f.l}</th>`).join('');
+  const trs=instances.map((inst,i)=>{
+    const odd=i%2===0;
+    const bg=odd?'#F5F0E4':'#2E2E2E';
+    const tc=odd?'#1E2010':'#E4DDB0';
+    const bc=odd?'#E0D8C0':'#3A3A3A';
+    const tds=fields.map(f=>{
+      const val=inst[f.k]||'';
+      let cell='';
+      if(f.t==='image')      cell=val&&val.startsWith('data:')?`<img src="${val}" style="width:44px;height:44px;object-fit:contain;border-radius:4px;display:block">`:'-';
+      else if(f.t==='daterange'||f.t==='daterange_notime') cell=typeof val==='object'?formatDateRange(val,f.t==='daterange'):(val?esc(String(val)):'—');
+      else                    cell=val?esc(String(val)):'—';
+      return `<td style="padding:8px 10px;border-bottom:1px solid ${bc};color:${tc};vertical-align:middle;background:${bg};word-break:break-word;font-size:13px">${cell}</td>`;
+    }).join('');
+    return `<tr>${tds}</tr>`;
+  }).join('');
+  return `<div style="border-radius:10px;overflow:hidden;border:1.5px solid #2D5E3E;margin-bottom:10px"><table style="width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+}
+
+function buildAstekCards(sec,def){
+  const instances=sec.instances||[];if(!instances.length)return'';
+  return instances.map(inst=>{
+    let body='';
+    def.fields.forEach(f=>{
+      if(f.t==='header')return;
+      const val=inst[f.k];if(!val)return;
+      if(f.t==='image'){
+        if(String(val).startsWith('data:')) body+=`<div style="margin-bottom:14px"><div style="font-size:12px;font-weight:700;color:#6B4E1A;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">${f.l}</div><img src="${val}" style="max-width:100%;max-height:280px;border-radius:8px;display:block"></div>`;
+      } else if(f.t==='daterange'||f.t==='daterange_notime'){
+        const disp=typeof val==='object'?formatDateRange(val,f.t==='daterange'):String(val);
+        if(disp) body+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:14px"><span style="color:#7A6940;min-width:140px;flex-shrink:0">${f.l}</span><span style="color:#1E2B1A;font-weight:600">${esc(disp)}</span></div>`;
+      } else if(f.t==='url'){
+        const strVal=String(val).trim();if(!strVal)return;
+        body+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:14px"><span style="color:#7A6940;min-width:140px;flex-shrink:0">${f.l}</span><a href="${esc(strVal)}" style="color:#2D5E3E;font-weight:600;word-break:break-all">${esc(strVal)}</a></div>`;
+      } else if(f.t==='status_btn'){
+        const strVal=String(val).trim();if(!strVal)return;
+        const statusColors={
+          'แก้ไขแล้ว':   {bg:'rgba(16,185,129,.18)',border:'rgba(16,185,129,.45)',color:'#065f46'},
+          'กำลังปรับปรุง':{bg:'rgba(245,158,11,.18)',border:'rgba(245,158,11,.45)',color:'#78350f'},
+          'ปิดระบบ':      {bg:'rgba(239,68,68,.18)',border:'rgba(239,68,68,.45)',color:'#7f1d1d'}
+        };
+        const sc=statusColors[strVal]||{bg:'rgba(107,114,128,.15)',border:'rgba(107,114,128,.4)',color:'#374151'};
+        body+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:14px;align-items:center"><span style="color:#7A6940;min-width:140px;flex-shrink:0">${f.l}</span><span style="background:${sc.bg};border:1px solid ${sc.border};color:${sc.color};font-size:12px;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:.3px">${esc(strVal)}</span></div>`;
+      } else {
+        const strVal=String(val).trim();if(!strVal)return;
+        body+=`<div style="display:flex;gap:8px;margin-bottom:8px;font-size:14px"><span style="color:#7A6940;min-width:140px;flex-shrink:0">${f.l}</span><span style="color:#1E2B1A;font-weight:600;white-space:pre-wrap">${esc(strVal)}</span></div>`;
+      }
+    });
+    return body?`<div style="background:#FAFAF6;border:1px solid #DDD5B4;border-radius:10px;padding:14px 16px;margin-bottom:10px">${body}</div>`:'';
+  }).join('');
+}
+
+function buildCurrentFormSub(){
+  const name=document.getElementById('f-name')?.value.trim();
+  const company=document.getElementById('f-company')?.value;
+  const date=document.getElementById('f-date')?.value;
+  if(!name||!date)return null;
+  return {id:'draft_'+Date.now(),gpName:'GP: '+name,company,patchDate:date,sections:collectSections(),tables:tableInstances,timestamp:now(),editHistory:[]};
+}
+
+// ═══════════════════════════════════════════
+//  MODAL & TOAST HELPERS
+// ═══════════════════════════════════════════
+function showModal(id){document.getElementById(id)?.classList.add('active');}
+function closeModal(id){document.getElementById(id)?.classList.remove('active');}
+document.addEventListener('click',e=>{if(e.target.classList.contains('overlay'))e.target.classList.remove('active');});
+function toast(icon,msg,isErr=false){
+  const el=document.getElementById('toast');
+  document.getElementById('t-icon').textContent=icon;
+  document.getElementById('t-msg').textContent=msg;
+  el.style.borderColor=isErr?'rgba(239,68,68,.3)':'rgba(16,185,129,.3)';
+  el.style.color=isErr?'var(--red)':'var(--green)';
+  el.classList.add('show');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3600);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ═══════════════════════════════════════════
+//  GOOGLE BUTTON INIT
+// ═══════════════════════════════════════════
+function initGoogleBtn(){
+  try{
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCred});
+    google.accounts.id.renderButton(document.getElementById('google-signin-btn'),{theme:'outline',size:'large',width:300,locale:'th'});
+  }catch(e){
+    document.getElementById('demo-login-btn').style.display='flex';
+    document.getElementById('demo-banner-login').style.display='flex';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  STARTUP
+// ═══════════════════════════════════════════
+window.addEventListener('load',()=>{
+  initStorage();
+  if(GOOGLE_CLIENT_ID==='YOUR_GOOGLE_CLIENT_ID_HERE'){showPage('setup');return;}
+  try{
+    const saved=ls(SK.USER);
+    if(saved&&saved!==''){
+      const u=JSON.parse(saved);
+      if(getUserRecord(u.email)){currentUser=u;loadMain();showPage('main');return;}
+    }
+  }catch(e){}
+  showPage('login');initGoogleBtn();
+});
+</script>
+</body>
+</html>
