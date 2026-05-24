@@ -310,7 +310,7 @@ code{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);border-ra
     <button class="tab-btn" onclick="switchTab('responses',this)">📊 My Responses</button>
     <button class="tab-btn" onclick="switchTab('history',this)">📜 Edit History</button>
     <button class="tab-btn admin-only" onclick="switchTab('perms',this)" style="display:none">👥 จัดการสิทธิ์</button>
-    <button class="tab-btn admin-only" onclick="switchTab('logs',this)" style="display:none">📋 Login Log</button>
+    <button class="tab-btn logs-tab" onclick="switchTab('logs',this)" style="display:none">📋 Login Log</button>
   </div>
 
   <!-- TAB: FORM -->
@@ -541,9 +541,9 @@ const ROLES = {
 };
 const PERMS = {
   admin:     ['fill','edit','view_all','history','manage','logs'],
-  gp_blue:   ['fill','edit','view_all','history'],
-  gp_purple: ['fill','edit','view_all','history'],
-  editor:    ['fill','edit','view_own','history']
+  gp_blue:   ['fill','edit','view_all','history','logs'],
+  gp_purple: ['fill','edit','view_all','history','logs'],
+  editor:    ['fill','edit','view_all','history','logs']
 };
 
 // ═══════════════════════════════════════════
@@ -809,6 +809,10 @@ function loadMain(){
   // Show admin tabs
   document.querySelectorAll('.admin-only').forEach(el=>{
     el.style.display=isAdmin(currentUser.email)?'':'none';
+  });
+  // Show logs tab for anyone with logs permission
+  document.querySelectorAll('.logs-tab').forEach(el=>{
+    el.style.display=hasPerm(currentUser.email,'logs')?'':'none';
   });
   document.getElementById('demo-form-banner').style.display=isDemoMode?'flex':'none';
   buildSectionMenu();
